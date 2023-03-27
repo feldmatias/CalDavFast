@@ -25,7 +25,8 @@ Finally, Rust has a growing ecosystem of libraries and tools, including the hype
 Overall, Rust's performance, safety, and reliability features make it an attractive choice for developing high-performance network applications like CalDav servers.
 
 
-# Development
+## Development
+
 - Install Rust https://www.rust-lang.org/learn/get-started
 - Install pre-commit hook:
   1. `pip install pre-commit`
