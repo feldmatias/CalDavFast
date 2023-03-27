@@ -6,5 +6,5 @@ fn calculate_doubles_age() {
 
     let result = item.calculate();
 
-    assert_eq!(result, 3)
+    assert_eq!(result, 30)
 }
