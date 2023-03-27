@@ -10,8 +10,9 @@ repos:
       - id: test
         name: cargo test
         description: Run tests with cargo test.
-        entry: cargo test --
+        entry: cargo test
         language: rust
         types: [rust]
         stages: [commit]
         args: []
+        pass_filenames: false
