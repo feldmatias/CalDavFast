@@ -5,3 +5,13 @@ repos:
       - id: clippy
     repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0
+  - repo: local
+    hooks:
+      - id: test
+        name: cargo test
+        description: Run tests with cargo test.
+        entry: cargo test --
+        language: rust
+        types: [rust]
+        stages: [commit]
+        args: []
