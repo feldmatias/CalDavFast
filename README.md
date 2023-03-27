@@ -18,3 +18,7 @@ Third, Rust has a low-level control over system resources, allowing for fine-gra
 Finally, Rust has a growing ecosystem of libraries and tools, including the hyper HTTP library, which provides a high-performance foundation for developing web applications like CalDav servers.
 
 Overall, Rust's performance, safety, and reliability features make it an attractive choice for developing high-performance network applications like CalDav servers.
+
+
+pip install pre-commit
+pre-commit install

@@ -13,6 +13,10 @@ impl MyModel {
 
 impl Display for MyModel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "MyModel from impl {{ name: {}, age: {} }}", self.name, self.age)
+        write!(
+            f,
+            "MyModel from impl {{ name: {}, age: {} }}",
+            self.name, self.age
+        )
     }
 }
