@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "cal-dav-fast"
+name = "cal_dav_fast"
 version = "0.1.0"
