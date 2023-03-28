@@ -24,19 +24,3 @@ impl Display for MyModel {
         )
     }
 }
-
-pub mod factory {
-    use super::*;
-    use factori::*;
-
-    factori!(MyModel, {
-        default {
-            name: String = "John".to_string(),
-            age: u32 = 42
-        }
-
-        builder {
-            MyModel::new(name, age)
-        }
-    });
-}
