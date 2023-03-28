@@ -5,7 +5,7 @@ mod common;
 use common::*;
 
 #[test]
-fn calculate_doubles_age() {
+fn calculate_doubles_age3() {
     run_test(|| {
         let item = MyModel::new(String::from("test"), 15);
 
