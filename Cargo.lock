@@ -6,8 +6,15 @@ version = 3
 name = "cal_dav_fast"
 version = "0.1.0"
 dependencies = [
+ "ddi",
  "dotenv",
 ]
+
+[[package]]
+name = "ddi"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d75849e49ab895e10c1a150908983f11d925693aee2c393ac184bca7addaa7ed"
 
 [[package]]
 name = "dotenv"
