@@ -25,19 +25,18 @@ impl Display for MyModel {
     }
 }
 
-#[cfg(test)]
-mod tests {
+pub mod factory {
     use super::*;
+    use factori::*;
 
-    #[test]
-    fn calculate_doubles_age() {
-        let item = MyModel {
-            name: String::from("test"),
-            age: 15,
-        };
+    factori!(MyModel, {
+        default {
+            name: String = "John".to_string(),
+            age: u32 = 42
+        }
 
-        let result = item.calculate();
-
-        assert_eq!(result, 30)
-    }
+        builder {
+            MyModel::new(name, age)
+        }
+    });
 }
