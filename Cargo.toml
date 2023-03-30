@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 ddi = "0.2.1"
 dotenv = "0.15.0"
-factori = "1.1.0"
 
 [dev-dependencies]
+factori = "1.1.0"
 

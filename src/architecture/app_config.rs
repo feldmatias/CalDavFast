@@ -6,9 +6,14 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn new() -> Self {
-        dotenv::dotenv().ok();
         Self {
             environment: env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
         }
+    }
+}
+
+impl Default for AppConfig {
+    fn default() -> Self {
+        Self::new()
     }
 }

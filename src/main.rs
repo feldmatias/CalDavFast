@@ -1,12 +1,11 @@
-use crate::dependency_injection::di_container;
-
-mod app_config;
-mod dependency_injection;
+use cal_dav_fast::architecture::app_config::AppConfig;
+use cal_dav_fast::architecture::dependency_injection::di_container;
 
 fn main() {
+    dotenv::dotenv().ok();
     println!("Hello, world! from rust");
 
-    let config = app_config::AppConfig::new();
+    let config = AppConfig::new();
     println!("environment: {}", config.environment);
 
     di_container();

@@ -25,10 +25,32 @@ Finally, Rust has a growing ecosystem of libraries and tools, including the hype
 Overall, Rust's performance, safety, and reliability features make it an attractive choice for developing high-performance network applications like CalDav servers.
 
 
+### Why MongoDB? (By ChatGPT)
+
+MongoDB is a NoSQL database that is particularly well-suited for applications that require high scalability, flexibility, and availability. One of the key advantages of MongoDB is its ability to handle large volumes of unstructured data. This makes it an ideal choice for a CalDAV server, which typically involves storing and managing large amounts of calendar data.
+
+Here are a few reasons why MongoDB is a good choice for a CalDAV server:
+
+- Flexibility: MongoDB's document-oriented data model allows for flexible and dynamic data structures that can easily handle changes in the schema. This makes it easy to store complex calendar data, such as recurring events, exceptions, and attachments.
+
+- Scalability: MongoDB is designed to scale horizontally across multiple servers, which means that it can handle large amounts of data and traffic. This is particularly important for a CalDAV server, which needs to handle a large number of concurrent users.
+
+- Availability: MongoDB is designed to be highly available, with built-in replication and automatic failover. This ensures that your CalDAV server is always up and running, even in the event of a hardware failure or network outage.
+
+- Performance: MongoDB's indexing and query optimization features allow for fast and efficient data access, which is important for a CalDAV server that needs to serve up calendar data in real-time.
+
+Overall, MongoDB is a powerful and flexible database that is well-suited for the demands of a CalDAV server. Its ability to handle large amounts of unstructured data, scale horizontally, and provide high availability and performance make it an ideal choice for this type of application.
+
 ## Development
 
 - Install Rust https://www.rust-lang.org/learn/get-started
 - Install pre-commit hook:
   1. `pip install pre-commit`
   2. `pre-commit install`
-- Run `cargo run` to start the server
+- Run `docker compose up` to start the dependencies like database. 
+(Can use `docker compose start` after the first time).
+- Run `cargo run` to start the server.
+- Run `cargo test` to run the tests.
+- Run `cargo fmt` to format the code.
+- Run `cargo clippy` to check for linting errors.
+- Run `cargo doc --open` to generate the documentation.

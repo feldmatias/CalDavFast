@@ -1,3 +1,4 @@
+pub mod architecture;
 pub mod models;
 
 use crate::models::mymodel::MyModel;

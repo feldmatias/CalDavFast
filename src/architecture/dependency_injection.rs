@@ -1,4 +1,4 @@
-use crate::app_config::AppConfig;
+use crate::architecture::app_config::AppConfig;
 use ddi::*;
 
 struct TestService {
