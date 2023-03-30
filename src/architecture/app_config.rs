@@ -7,7 +7,7 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn new() -> Self {
         Self {
-            environment: env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
+            environment: env::var("RUST_ENV").unwrap_or_else(|_| "development".to_string()),
         }
     }
 }
