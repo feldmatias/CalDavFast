@@ -1,14 +1,19 @@
-use cal_dav_fast::architecture::app_config::AppConfig;
 use cal_dav_fast::architecture::dependency_injection::di_container;
+use cal_dav_fast::architecture::mongodb::MongoDb;
+use cal_dav_fast::CalDav;
+use ddi::{Service, ServiceResolverExt};
+use std::error::Error;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     dotenv::dotenv().ok();
     println!("Hello, world! from rust");
 
-    let config = AppConfig::new();
-    println!("environment: {}", config.environment);
+    // Need to create mongo outside di because of async/await
+    let mongo = MongoDb::new().await;
+    let di_provider = di_container(mongo);
 
-    di_container();
+    let caldav = di_provider.get::<Service<CalDav>>().unwrap();
 
-    cal_dav_fast::print_model();
+    caldav.run().await
 }

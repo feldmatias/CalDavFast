@@ -8,6 +8,12 @@ edition = "2021"
 [dependencies]
 ddi = "0.2.1"
 dotenv = "0.15.0"
+mongodb = "2.4.0"
+bson = { version = "2", features = ["chrono-0_4"] }
+tokio = "1"
+chrono = "0.4"
+serde = "1"
+futures = "0.3"
 
 [dev-dependencies]
 factori = "1.1.0"
