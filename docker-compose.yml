@@ -6,10 +6,9 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGODB_USERNAME=root
-      - MONGODB_PASSWORD=password123
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=password123
       - MONGODB_DATABASE=caldav
-      - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - 'mongodb_data:/bitnami/mongodb'
 

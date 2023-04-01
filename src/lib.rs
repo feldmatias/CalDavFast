@@ -64,11 +64,29 @@ impl CalDav {
         let mymodel = MyModel::new("John".to_string(), 42);
         println!("this is my model {}", mymodel);
 
-        let db = self.mongodb.client.database("caldav");
+        // TODO: fix this
+        let db = self.mongodb.client.database("caldav_test");
 
         let typed_collection = db.collection::<Books>("books");
 
+        let books = vec![
+            Books::Book(Book {
+                id: None,
+                title: "The Grapes of Wrath".to_string(),
+                author: "John Steinbeck".to_string(),
+            }),
+            Books::Book(Book {
+                id: None,
+                title: "To Kill a Mockingbird".to_string(),
+                author: "Harper Lee".to_string(),
+            }),
+        ];
+
+        typed_collection.insert_many(books, None).await?;
+
         let mut cursor = typed_collection.find(None, None).await?;
+
+        println!("test");
 
         // Iterate over the results of the cursor.
         while let Some(book) = cursor.try_next().await? {
@@ -77,6 +95,9 @@ impl CalDav {
                 Books::Test(book) => println!("BookTest: {}", book),
             }
         }
+
+        let count = typed_collection.count_documents(None, None).await?;
+        println!("count: {}", count);
 
         Ok(())
     }

@@ -17,4 +17,8 @@ futures = "0.3"
 
 [dev-dependencies]
 factori = "1.1.0"
+test-context = "0.1.4"
+lazy_static = "1.4.0"
+async-trait = "0.1.68"
+async_once = "0.2.6"
 

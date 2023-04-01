@@ -7,8 +7,16 @@ pub struct MongoDb {
 
 impl MongoDb {
     pub async fn new() -> Self {
-        let config = AppConfig::new();
-        let client = Client::with_uri_str(&config.mongodb).await.unwrap();
+        let app_config = AppConfig::new();
+        let client = Client::with_uri_str(&app_config.mongodb).await.unwrap();
         Self { client }
+    }
+}
+
+impl Clone for MongoDb {
+    fn clone(&self) -> Self {
+        Self {
+            client: self.client.clone(),
+        }
     }
 }

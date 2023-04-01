@@ -44,12 +44,15 @@ Overall, MongoDB is a powerful and flexible database that is well-suited for the
 ## Development
 
 - Install Rust https://www.rust-lang.org/learn/get-started
+- `cp .env.example .env` and change the values if needed.
 - Install pre-commit hook:
   1. `pip install pre-commit`
   2. `pre-commit install`
 - Run `docker compose up` to start the dependencies like database. 
 (Can use `docker compose start` after the first time).
 - Run `cargo run` to start the server.
+
+
 - Run `cargo test` to run the tests.
 - Run `cargo fmt` to format the code.
 - Run `cargo clippy` to check for linting errors.

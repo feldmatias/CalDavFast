@@ -1,22 +1,47 @@
-use std::panic;
+use async_trait::async_trait;
+use cal_dav_fast::architecture::dependency_injection::di_container;
+use cal_dav_fast::architecture::mongodb::MongoDb;
+use ddi::{Service, ServiceProvider};
+use lazy_static::lazy_static;
+use std::sync::Arc;
+use test_context::AsyncTestContext;
 
-pub fn run_test<T>(test: T) -> ()
-where
-    T: FnOnce() -> () + panic::UnwindSafe,
-{
-    setup();
+/*lazy_static! {
+    static ref TESTS_MONGO_PROVIDER : AsyncOnce<MongoDb> = AsyncOnce::new(async{
+        dotenv::from_filename(".env.test").ok();
+        let mongo = MongoDb::new().await;
+            mongo
+       });
+}*/
 
-    let result = panic::catch_unwind(|| test());
-
-    teardown();
-
-    assert!(result.is_ok())
+pub struct TestsContext {
+    mongo: MongoDb,
 }
 
-fn setup() {
-    println!("setup");
+impl TestsContext {
+    pub async fn get_provider(&self) -> ServiceProvider {
+        let container = di_container(self.mongo.clone()).await;
+        container
+    }
 }
 
-fn teardown() {
-    println!("teardown");
+#[async_trait]
+impl AsyncTestContext for TestsContext {
+    async fn setup() -> TestsContext {
+        dotenv::from_filename(".env.test").ok();
+        let mongo = MongoDb::new().await;
+        TestsContext {
+            mongo: mongo.clone(),
+        }
+    }
+
+    async fn teardown(self) {
+        // Perform any teardown you wish.
+        self.mongo
+            .client
+            .database("caldav_test")
+            .drop(None)
+            .await
+            .unwrap();
+    }
 }
