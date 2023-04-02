@@ -9,7 +9,7 @@ impl AppConfig {
     pub fn new() -> Self {
         Self {
             environment: env::var("RUST_ENV").unwrap_or_else(|_| "local".to_string()),
-            mongodb: env::var("MONGO_DB").expect("MongoDB is needed"),
+            mongodb: env::var("MONGO_DB").expect("MongoDB env var is needed"),
         }
     }
 }

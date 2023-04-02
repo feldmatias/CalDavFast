@@ -34,12 +34,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async_once"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ce4f10ea3abcd6617873bae9f91d1c5332b4a778bd9ce34d0cd517474c1de82"
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -122,18 +116,15 @@ checksum = "89b2fd2a0dcf38d7971e2194b6b6eebab45ae01067456a7fd93d5547a61b70be"
 name = "cal_dav_fast"
 version = "0.1.0"
 dependencies = [
- "async-trait",
- "async_once",
  "bson",
  "chrono",
  "ddi",
  "dotenv",
  "factori",
  "futures",
- "lazy_static",
  "mongodb",
+ "once_cell",
  "serde",
- "test-context",
  "tokio",
 ]
 
@@ -1253,27 +1244,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be55cf8942feac5c765c2c993422806843c9a9a45d4d5c407ad6dd2ea95eb9b6"
 dependencies = [
  "winapi-util",
-]
-
-[[package]]
-name = "test-context"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "055831a02a4f5aa28fede67f2902014273eb8c21b958ac5ebbd59b71ef30dbc3"
-dependencies = [
- "async-trait",
- "futures",
- "test-context-macros",
-]
-
-[[package]]
-name = "test-context-macros"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8901a55b0a7a06ebc4a674dcca925170da8e613fa3b163a1df804ed10afb154d"
-dependencies = [
- "quote",
- "syn 1.0.109",
 ]
 
 [[package]]

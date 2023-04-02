@@ -1,22 +1,21 @@
-use crate::architecture::app_config::AppConfig;
-use mongodb::Client;
+use mongodb::{Client, Database};
 
 pub struct MongoDb {
-    pub client: Client,
+    pub db: Database,
 }
 
 impl MongoDb {
-    pub async fn new() -> Self {
-        let app_config = AppConfig::new();
-        let client = Client::with_uri_str(&app_config.mongodb).await.unwrap();
-        Self { client }
+    pub fn new(client: &Client, db_name: String) -> Self {
+        Self {
+            db: client.database(db_name.as_str()),
+        }
     }
 }
 
 impl Clone for MongoDb {
     fn clone(&self) -> Self {
         Self {
-            client: self.client.clone(),
+            db: self.db.clone(),
         }
     }
 }

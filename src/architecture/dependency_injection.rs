@@ -7,10 +7,10 @@ use ddi::*;
 * Generate the dependency injection container.
 * Each injectable service should be registered here.
 */
-pub async fn di_container(mongo: MongoDb) -> ServiceProvider {
+pub async fn di_container(client: &mongodb::Client, db_name: String) -> ServiceProvider {
     let mut services = ServiceCollection::new();
     services.service(Service::new(AppConfig::new()));
-    services.service(Service::new(mongo));
+    services.service(Service::new(MongoDb::new(client, db_name)));
     services
         .service_factory(|mongo: &Service<MongoDb>| Ok(Service::new(CalDav::new(mongo.clone()))));
 

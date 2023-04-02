@@ -11,7 +11,7 @@ factori!(MyModel, {
         MyModel::new(name, age)
     }
 
-    mixin baby {
+    /*mixin baby {
         age = 1,
-    }
+    }*/
 });

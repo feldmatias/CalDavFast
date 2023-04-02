@@ -64,10 +64,7 @@ impl CalDav {
         let mymodel = MyModel::new("John".to_string(), 42);
         println!("this is my model {}", mymodel);
 
-        // TODO: fix this
-        let db = self.mongodb.client.database("caldav_test");
-
-        let typed_collection = db.collection::<Books>("books");
+        let typed_collection = self.mongodb.db.collection::<Books>("books");
 
         let books = vec![
             Books::Book(Book {
