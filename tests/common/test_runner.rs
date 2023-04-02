@@ -39,13 +39,8 @@ pub fn run_test(test: fn(&ServiceProvider) -> BoxFuture<()>) -> () {
 }
 
 async fn setup(provider: &ServiceProvider) {
-    provider
-        .get::<Service<MongoDb>>()
-        .unwrap()
-        .db
-        .drop(None)
-        .await
-        .unwrap();
+    // Could not find a way to catch panics in async functions
+    teardown(provider).await;
 }
 
 async fn teardown(provider: &ServiceProvider) {
