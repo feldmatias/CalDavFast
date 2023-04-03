@@ -1,6 +1,5 @@
-use cal_dav_fast::architecture::dependency_injection::di_container;
+use cal_dav_fast::architecture::dependency_injection::{di_container, DDIProvider};
 use cal_dav_fast::architecture::mongodb::MongoDb;
-use ddi::{Service, ServiceProvider, ServiceResolverExt};
 use futures::future::BoxFuture;
 use once_cell::sync::Lazy;
 use tokio::runtime::Runtime;
@@ -24,7 +23,7 @@ fn test_id() -> usize {
     ID.fetch_add(1, Ordering::SeqCst)
 }
 
-pub fn run_test(test: fn(&ServiceProvider) -> BoxFuture<()>) -> () {
+pub fn run_test(test: fn(&DDIProvider) -> BoxFuture<()>) -> () {
     let (runtime, client) = &*TESTS_RUNTIME;
     runtime.block_on(async {
         let db_name = format!("caldav_test{}", test_id());
@@ -38,17 +37,11 @@ pub fn run_test(test: fn(&ServiceProvider) -> BoxFuture<()>) -> () {
     });
 }
 
-async fn setup(provider: &ServiceProvider) {
+async fn setup(provider: &DDIProvider) {
     // Could not find a way to catch panics in async functions
     teardown(provider).await;
 }
 
-async fn teardown(provider: &ServiceProvider) {
-    provider
-        .get::<Service<MongoDb>>()
-        .unwrap()
-        .db
-        .drop(None)
-        .await
-        .unwrap();
+async fn teardown(provider: &DDIProvider) {
+    provider.get::<MongoDb>().db.drop(None).await.unwrap();
 }

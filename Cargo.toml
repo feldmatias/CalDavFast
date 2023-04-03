@@ -12,6 +12,8 @@ tokio = "1"
 chrono = "0.4"
 serde = "1"
 futures = "0.3"
+actix-web = "4"
+env_logger = "0.10.0"
 
 [dev-dependencies]
 factori = "1.1.0"
