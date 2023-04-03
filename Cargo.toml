@@ -14,6 +14,8 @@ serde = "1"
 futures = "0.3"
 actix-web = "4"
 env_logger = "0.10.0"
+actix-xml = "0.2.0"
+serde-xml-rs = "0.6.0"
 
 [dev-dependencies]
 factori = "1.1.0"
