@@ -1,5 +1,7 @@
 pub mod architecture;
+pub mod controllers;
 pub mod models;
+pub mod server;
 
 use crate::architecture::mongodb::MongoDb;
 use crate::models::mymodel::MyModel;

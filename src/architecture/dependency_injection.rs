@@ -1,5 +1,6 @@
 use crate::architecture::app_config::AppConfig;
 use crate::architecture::mongodb::MongoDb;
+use crate::controllers::hello_controller::HelloController;
 use crate::CalDav;
 use ddi::*;
 
@@ -13,6 +14,9 @@ pub async fn di_container(client: &mongodb::Client, db_name: String) -> DDIProvi
     services.service(Service::new(MongoDb::new(client, db_name)));
     services
         .service_factory(|mongo: &Service<MongoDb>| Ok(Service::new(CalDav::new(mongo.clone()))));
+    services.service_factory(|config: &Service<AppConfig>| {
+        Ok(Service::new(HelloController::new(config.clone())))
+    });
 
     let provider = services.provider();
     DDIProvider::new(provider)
