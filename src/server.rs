@@ -1,11 +1,9 @@
 use actix_web::{
-    http::header::ContentType,
     middleware, post,
     web::{self, Data},
-    App, HttpResponse, HttpServer, Responder,
+    App, HttpServer, Responder,
 };
 use actix_xml::Xml;
-use serde_xml_rs::to_string;
 
 use crate::{
     architecture::{
@@ -17,11 +15,7 @@ use crate::{
 
 #[post("/")]
 async fn hello(provider: web::Data<DDIProvider>, request: Xml<XMLRequest>) -> impl Responder {
-    let controller = provider.get::<HelloController>();
-    let result = controller.hello(request.0).await;
-    HttpResponse::Ok()
-        .content_type(ContentType::xml())
-        .body(to_string(&result).unwrap())
+    provider.get::<HelloController>().hello(request.0).await
 }
 
 pub async fn start_server() -> Result<(), std::io::Error> {

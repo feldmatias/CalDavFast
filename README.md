@@ -51,6 +51,7 @@ Overall, MongoDB is a powerful and flexible database that is well-suited for the
 - Run `docker compose up` to start the dependencies like database. 
 (Can use `docker compose start` after the first time).
 - Run `cargo run` to start the server.
+- Run `cargo-watch -x run` to start the server in watch mode.
 
 
 - Run `cargo test` to run the tests.
