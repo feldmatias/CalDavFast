@@ -10,6 +10,12 @@ CalDav is supported by various calendar applications, including Apple iCal, Mozi
 
 Overall, CalDav simplifies the process of accessing and sharing calendar data across multiple devices and applications.
 
+- RFC 4918 - HTTP Extensions for Web Distributed Authoring and Versioning (WebDAV): This RFC defines the WebDAV protocol, which is an extension to the HTTP/1.1 protocol that allows clients to perform remote web content authoring operations. WebDAV enables clients to create, modify, and delete content on a remote web server, as well as lock and unlock resources to prevent editing conflicts. It also includes support for versioning, collections, and properties, making it a useful protocol for distributed authoring and versioning of web resources.
+
+- RFC 4791 - CalDAV: An Extension to WebDAV for Distributed Collaboration: This RFC defines the CalDAV protocol, which extends the WebDAV protocol to enable calendaring and scheduling functionalities.
+
+- RFC 5545 - iCalendar: This RFC defines the iCalendar format, which is used for exchanging calendar and scheduling information.
+
 ### Why Rust? (By ChatGPT)
 
 Rust is a programming language that has gained popularity in recent years due to its focus on performance, safety, and reliability. These characteristics make it well-suited for developing network applications, such as CalDav servers.
