@@ -20,4 +20,5 @@ serde-xml-rs = "0.6.0"
 [dev-dependencies]
 factori = "1.1.0"
 once_cell = "1.17.1"
+pretty_assertions = "1.3.0"
 

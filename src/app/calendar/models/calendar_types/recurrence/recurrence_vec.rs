@@ -26,6 +26,10 @@ impl<T: PartialEq + Clone> RecurrenceVec<T> {
         self.data.iter().any(|x| *x == *item)
     }
 
+    pub fn length(&self) -> usize {
+        self.data.len()
+    }
+
     pub fn get_next(&self, item: &T) -> T {
         let index = self.data.iter().position(|x| *x == *item);
         match index {

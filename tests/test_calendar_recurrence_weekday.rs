@@ -1,5 +1,6 @@
 mod common;
 use cal_dav_fast::app::calendar::models::calendar_types::recurrence::weekday::Weekday;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn test_from_chrono_monday() {
