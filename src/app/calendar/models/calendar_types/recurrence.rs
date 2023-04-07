@@ -111,8 +111,6 @@ If multiple BYxxx rule parts are specified, then after evaluating
       BYHOUR, BYMINUTE, BYSECOND and BYSETPOS; then COUNT and UNTIL are
       evaluated.
 
-https://github.com/dateutil/dateutil/blob/master/src/dateutil/rrule.py
-
 +----------+--------+--------+-------+-------+------+-------+------+
    |          |SECONDLY|MINUTELY|HOURLY |DAILY  |WEEKLY|MONTHLY|YEARLY|
    +----------+--------+--------+-------+-------+------+-------+------+
@@ -144,49 +142,12 @@ https://github.com/dateutil/dateutil/blob/master/src/dateutil/rrule.py
                special expand for YEARLY.
 */
 
+pub mod recurrence_vec;
+pub mod weekday;
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RecurrenceVec<T: PartialEq + Clone> {
-    pub data: Vec<T>,
-}
-
-impl<T: PartialEq + Clone> RecurrenceVec<T> {
-    pub fn set_default(&self, items: Vec<T>) -> RecurrenceVec<T> {
-        RecurrenceVec {
-            data: if self.data.is_empty() {
-                items
-            } else {
-                self.data.clone()
-            },
-        }
-    }
-
-    pub fn contains(&self, item: &T) -> bool {
-        self.data.iter().any(|x| *x == *item)
-    }
-
-    pub fn get_next(&self, item: &T) -> T {
-        let index = self.data.iter().position(|x| *x == *item);
-        match index {
-            Some(i) => {
-                if i == self.data.len() - 1 {
-                    self.data[0].clone()
-                } else {
-                    self.data[i + 1].clone()
-                }
-            }
-            None => self.data[0].clone(),
-        }
-    }
-}
-
-impl<T: PartialEq + Clone> Default for RecurrenceVec<T> {
-    fn default() -> Self {
-        RecurrenceVec { data: Vec::new() }
-    }
-}
+use self::{recurrence_vec::RecurrenceVec, weekday::Weekday};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Frequency {
@@ -197,39 +158,6 @@ pub enum Frequency {
     Weekly,
     Monthly,
     Yearly,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
-pub enum Weekday {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
-    Sunday,
-}
-
-impl Weekday {
-    pub fn from_chrono(weekday: &chrono::Weekday) -> Weekday {
-        match weekday {
-            chrono::Weekday::Mon => Weekday::Monday,
-            chrono::Weekday::Tue => Weekday::Tuesday,
-            chrono::Weekday::Wed => Weekday::Wednesday,
-            chrono::Weekday::Thu => Weekday::Thursday,
-            chrono::Weekday::Fri => Weekday::Friday,
-            chrono::Weekday::Sat => Weekday::Saturday,
-            chrono::Weekday::Sun => Weekday::Sunday,
-        }
-    }
-
-    pub fn get_days_diff(&self, other: &Weekday) -> i32 {
-        let mut diff = *self as i32 - *other as i32;
-        if diff < 0 {
-            diff += 7;
-        }
-        diff
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -308,21 +236,13 @@ impl Recurrence {
         // SECONDLY freq
         match self.frequency {
             Frequency::Secondly => {
-                let months = self.months.set_default((1..=12).collect());
-                let year_days = self.year_days.set_default((1..=366).collect());
-                let month_days = self.month_days.set_default((1..=31).collect());
-                let weekdays = self.weekdays.set_default(vec![
-                    Weekday::Monday,
-                    Weekday::Tuesday,
-                    Weekday::Wednesday,
-                    Weekday::Thursday,
-                    Weekday::Friday,
-                    Weekday::Saturday,
-                    Weekday::Sunday,
-                ]);
-                let hours = self.hours.set_default((0..=23).collect());
-                let minutes = self.minutes.set_default((0..=59).collect());
-                let seconds = self.seconds.set_default((0..=59).collect());
+                let months = self.months.get_or_default_months();
+                let year_days = self.year_days.get_or_default_year_days();
+                let month_days = self.month_days.get_or_default_month_days();
+                let weekdays = self.weekdays.get_or_default_weekdays();
+                let hours = self.hours.get_or_default_hours();
+                let minutes = self.minutes.get_or_default_minutes();
+                let seconds = self.seconds.get_or_default_seconds();
 
                 loop {
                     if count == 0 {
@@ -384,7 +304,7 @@ impl Recurrence {
                         let next_weekday =
                             weekdays.get_next(&Weekday::from_chrono(&current_date.weekday()));
                         let days_diff = next_weekday
-                            .get_days_diff(&Weekday::from_chrono(&current_date.weekday()));
+                            .get_days_diff_from(&Weekday::from_chrono(&current_date.weekday()));
                         current_date += chrono::Duration::days(days_diff as i64);
                         continue;
                     }
@@ -463,13 +383,11 @@ mod test {
             }),
             week_start: None,
             weekdays: RecurrenceVec::default(),
-            hours: RecurrenceVec { data: vec![5] },
-            minutes: RecurrenceVec { data: vec![5] },
-            seconds: RecurrenceVec {
-                data: vec![5, 10, 12],
-            },
-            month_days: RecurrenceVec { data: vec![5] },
-            months: RecurrenceVec { data: vec![5] },
+            hours: RecurrenceVec::new(vec![5]),
+            minutes: RecurrenceVec::new(vec![5]),
+            seconds: RecurrenceVec::new(vec![5, 10, 12]),
+            month_days: RecurrenceVec::new(vec![5]),
+            months: RecurrenceVec::new(vec![5]),
             year_days: RecurrenceVec::default(),
             count: None,
             excluded_dates: Vec::default(),
