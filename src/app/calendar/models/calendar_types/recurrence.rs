@@ -177,82 +177,39 @@ impl Recurrence {
                     }
                     if !months.contains(&current_date.get_month()) {
                         // Skip to next month
-
-                        // TODO: move this to Date object
-                        // pub fn advance_until_next_available_month(&self, available: &RecurrenceVec<u32>) -> Date {
-                        let mut next_month = months.get_next(&current_date.get_month());
-                        let mut new_date = current_date.set_month(next_month);
-                        while new_date.is_none() {
-                            next_month = months.get_next(&next_month);
-                            new_date = current_date.set_month(next_month);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date = current_date.advance_until_next_available_month(&months);
                         continue;
                     }
                     if !year_days.contains(&current_date.get_year_day()) {
                         // Skip to next year day
-                        let mut next_year_day = year_days.get_next(&current_date.get_year_day());
-                        let mut new_date = current_date.set_year_day(next_year_day);
-                        while new_date.is_none() {
-                            next_year_day = year_days.get_next(&next_year_day);
-                            new_date = current_date.set_year_day(next_year_day);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date =
+                            current_date.advance_until_next_available_year_day(&year_days);
                         continue;
                     }
                     if !month_days.contains(&current_date.get_month_day()) {
                         // Skip to next month day
-                        let mut next_month_day = month_days.get_next(&current_date.get_month_day());
-                        let mut new_date = current_date.set_month_day(next_month_day);
-                        while new_date.is_none() {
-                            next_month_day = month_days.get_next(&next_month_day);
-                            new_date = current_date.set_month_day(next_month_day);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date =
+                            current_date.advance_until_next_available_month_day(&month_days);
                         continue;
                     }
                     if !weekdays.contains(&current_date.get_weekday()) {
                         // Skip to next weekday
-                        let mut next_weekday = weekdays.get_next(&current_date.get_weekday());
-                        let mut new_date = current_date.set_weekday(next_weekday);
-                        while new_date.is_none() {
-                            next_weekday = weekdays.get_next(&next_weekday);
-                            new_date = current_date.set_weekday(next_weekday);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date = current_date.advance_until_next_available_weekday(&weekdays);
                         continue;
                     }
                     if !hours.contains(&current_date.get_hour()) {
                         // Skip to next hour
-                        let mut next_hour = hours.get_next(&current_date.get_hour());
-                        let mut new_date = current_date.set_hour(next_hour);
-                        while new_date.is_none() {
-                            next_hour = hours.get_next(&next_hour);
-                            new_date = current_date.set_hour(next_hour);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date = current_date.advance_until_next_available_hour(&hours);
                         continue;
                     }
                     if !minutes.contains(&current_date.get_minute()) {
                         // Skip to next minute
-                        let mut next_minute = minutes.get_next(&current_date.get_minute());
-                        let mut new_date = current_date.set_minute(next_minute);
-                        while new_date.is_none() {
-                            next_minute = minutes.get_next(&next_minute);
-                            new_date = current_date.set_minute(next_minute);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date = current_date.advance_until_next_available_minute(&minutes);
                         continue;
                     }
                     if !seconds.contains(&current_date.get_second()) {
                         // Skip to next second
-                        let mut next_second = seconds.get_next(&current_date.get_second());
-                        let mut new_date = current_date.set_second(next_second);
-                        while new_date.is_none() {
-                            next_second = seconds.get_next(&next_second);
-                            new_date = current_date.set_second(next_second);
-                        }
-                        current_date = new_date.unwrap();
+                        current_date = current_date.advance_until_next_available_second(&seconds);
                         continue;
                     }
 

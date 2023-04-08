@@ -32,3 +32,15 @@ impl Weekday {
         diff
     }
 }
+
+impl PartialOrd for Weekday {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Weekday {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        (*self as i32).cmp(&(*other as i32))
+    }
+}

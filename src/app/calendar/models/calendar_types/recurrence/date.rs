@@ -1,7 +1,7 @@
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 
-use super::weekday::Weekday;
+use super::{recurrence_vec::RecurrenceVec, weekday::Weekday};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -17,27 +17,35 @@ impl Date {
 
     pub fn set_month(&self, month: u32) -> Option<Self> {
         let mut current_date = self.date;
-        let month = month;
-
-        if month <= current_date.month() {
-            current_date = current_date.with_year(current_date.year() + 1)?;
-        }
+        let current_month = current_date.month();
 
         current_date = current_date
-            .with_month(month)?
-            .with_day(1)?
-            .with_hour(0)?
-            .with_minute(0)?
+            .with_nanosecond(0)?
             .with_second(0)?
-            .with_nanosecond(0)?;
+            .with_minute(0)?
+            .with_hour(0)?
+            .with_day(1)?
+            .with_month(month)?;
+
+        if month <= current_month {
+            current_date = current_date.with_year(current_date.year() + 1)?;
+        }
 
         Some(Self::new(current_date))
     }
 
     pub fn set_month_day(&self, day: u32) -> Option<Self> {
         let mut current_date = self.date;
+        let current_day = current_date.day();
 
-        if day <= current_date.day() {
+        current_date = current_date
+            .with_nanosecond(0)?
+            .with_second(0)?
+            .with_minute(0)?
+            .with_hour(0)?
+            .with_day(1)?;
+
+        if day <= current_day {
             let mut next_month = current_date.month() + 1;
             if next_month > 12 {
                 next_month = 1;
@@ -45,29 +53,27 @@ impl Date {
             current_date = self.set_month(next_month)?.date;
         }
 
-        current_date = current_date
-            .with_day(day)?
-            .with_hour(0)?
-            .with_minute(0)?
-            .with_second(0)?
-            .with_nanosecond(0)?;
+        current_date = current_date.with_day(day)?;
 
         Some(Self::new(current_date))
     }
 
     pub fn set_year_day(&self, day: u32) -> Option<Self> {
         let mut current_date = self.date;
+        let current_day = current_date.ordinal();
 
-        if day <= current_date.ordinal() {
+        current_date = current_date
+            .with_nanosecond(0)?
+            .with_second(0)?
+            .with_minute(0)?
+            .with_hour(0)?
+            .with_ordinal(1)?;
+
+        if day <= current_day {
             current_date = current_date.with_year(current_date.year() + 1)?
         }
 
-        current_date = current_date
-            .with_ordinal(day)?
-            .with_hour(0)?
-            .with_minute(0)?
-            .with_second(0)?
-            .with_nanosecond(0)?;
+        current_date = current_date.with_ordinal(day)?;
 
         Some(Self::new(current_date))
     }
@@ -161,6 +167,78 @@ impl Date {
 
     pub fn get_second(&self) -> u32 {
         self.date.second()
+    }
+}
+
+impl Date {
+    pub fn advance_until_next_available_month(&self, available: &RecurrenceVec<u32>) -> Self {
+        let mut next_month = available.get_next(&self.get_month());
+        let mut new_date = self.set_month(next_month);
+        while new_date.is_none() {
+            next_month = available.get_next(&next_month);
+            new_date = self.set_month(next_month);
+        }
+        new_date.unwrap()
+    }
+
+    pub fn advance_until_next_available_month_day(&self, available: &RecurrenceVec<u32>) -> Self {
+        let mut next_day = available.get_next(&self.get_month_day());
+        let mut new_date = self.set_month_day(next_day);
+        while new_date.is_none() {
+            next_day = available.get_next(&next_day);
+            new_date = self.set_month_day(next_day);
+        }
+        new_date.unwrap()
+    }
+
+    pub fn advance_until_next_available_year_day(&self, available: &RecurrenceVec<u32>) -> Self {
+        let mut next_day = available.get_next(&self.get_year_day());
+        let mut new_date = self.set_year_day(next_day);
+        while new_date.is_none() {
+            next_day = available.get_next(&next_day);
+            new_date = self.set_year_day(next_day);
+        }
+        new_date.unwrap()
+    }
+
+    pub fn advance_until_next_available_weekday(&self, available: &RecurrenceVec<Weekday>) -> Self {
+        let mut next_weekday = available.get_next(&self.get_weekday());
+        let mut new_date = self.set_weekday(next_weekday);
+        while new_date.is_none() {
+            next_weekday = available.get_next(&next_weekday);
+            new_date = self.set_weekday(next_weekday);
+        }
+        new_date.unwrap()
+    }
+
+    pub fn advance_until_next_available_hour(&self, available: &RecurrenceVec<u32>) -> Self {
+        let mut next_hour = available.get_next(&self.get_hour());
+        let mut new_date = self.set_hour(next_hour);
+        while new_date.is_none() {
+            next_hour = available.get_next(&next_hour);
+            new_date = self.set_hour(next_hour);
+        }
+        new_date.unwrap()
+    }
+
+    pub fn advance_until_next_available_minute(&self, available: &RecurrenceVec<u32>) -> Self {
+        let mut next_minute = available.get_next(&self.get_minute());
+        let mut new_date = self.set_minute(next_minute);
+        while new_date.is_none() {
+            next_minute = available.get_next(&next_minute);
+            new_date = self.set_minute(next_minute);
+        }
+        new_date.unwrap()
+    }
+
+    pub fn advance_until_next_available_second(&self, available: &RecurrenceVec<u32>) -> Self {
+        let mut next_second = available.get_next(&self.get_second());
+        let mut new_date = self.set_second(next_second);
+        while new_date.is_none() {
+            next_second = available.get_next(&next_second);
+            new_date = self.set_second(next_second);
+        }
+        new_date.unwrap()
     }
 }
 

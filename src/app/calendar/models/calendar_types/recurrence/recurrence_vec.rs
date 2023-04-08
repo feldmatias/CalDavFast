@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 use super::weekday::Weekday;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct RecurrenceVec<T: PartialEq + Clone> {
+pub struct RecurrenceVec<T: PartialEq + Clone + Ord> {
     data: Vec<T>,
 }
 
-impl<T: PartialEq + Clone> RecurrenceVec<T> {
+impl<T: PartialEq + Clone + Ord> RecurrenceVec<T> {
     pub fn new(items: Vec<T>) -> RecurrenceVec<T> {
+        let mut items = items;
+        items.sort();
         RecurrenceVec { data: items }
     }
 
@@ -45,7 +47,7 @@ impl<T: PartialEq + Clone> RecurrenceVec<T> {
     }
 }
 
-impl<T: PartialEq + Clone> Default for RecurrenceVec<T> {
+impl<T: PartialEq + Clone + Ord> Default for RecurrenceVec<T> {
     fn default() -> Self {
         RecurrenceVec { data: Vec::new() }
     }

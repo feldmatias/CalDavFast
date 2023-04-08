@@ -1,5 +1,5 @@
 use cal_dav_fast::app::calendar::models::calendar_types::recurrence::{
-    date::Date, weekday::Weekday,
+    date::Date, recurrence_vec::RecurrenceVec, weekday::Weekday,
 };
 use chrono::{TimeZone, Utc};
 use pretty_assertions::assert_eq;
@@ -72,9 +72,11 @@ fn test_set_month_on_invalid_day() {
             .unwrap(),
     );
 
-    let new_date = date.set_month(2);
+    let new_date = date.set_month(2).unwrap();
 
-    assert!(new_date.is_none());
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 2);
+    assert_eq!(new_date.get_month_day(), 1);
 }
 
 #[test]
@@ -1014,4 +1016,512 @@ fn test_add_seconds_changes_year() {
     assert_eq!(new_date.get_hour(), 0);
     assert_eq!(new_date.get_minute(), 0);
     assert_eq!(new_date.get_second(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month() {
+    let available = RecurrenceVec::new(vec![1, 2, 3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 18, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 3);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_changes_year() {
+    let available = RecurrenceVec::new(vec![1, 2, 3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 3, 18, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_invalid_months() {
+    let available = RecurrenceVec::new(vec![1, 2, 3, 13, 18]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 3, 18, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_only_one_available() {
+    let available = RecurrenceVec::new(vec![3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 3, 18, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 3);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_day() {
+    let available = RecurrenceVec::new(vec![1, 2, 3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 1, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month_day(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 2);
+    assert_eq!(result.get_month_day(), 2);
+}
+
+#[test]
+fn test_advance_until_next_available_month_day_changes_month() {
+    let available = RecurrenceVec::new(vec![1, 2, 3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month_day(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 3);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_day_changes_year() {
+    let available = RecurrenceVec::new(vec![1, 2, 3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 12, 3, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month_day(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_day_invalid_days() {
+    let available = RecurrenceVec::new(vec![1, 2, 3, 32, 67]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 3, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month_day(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 2);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_day_invalid_days_february() {
+    let available = RecurrenceVec::new(vec![1, 2, 3, 30]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month_day(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 3);
+    assert_eq!(result.get_month_day(), 1);
+}
+
+#[test]
+fn test_advance_until_next_available_month_day_only_one_available() {
+    let available = RecurrenceVec::new(vec![3]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_month_day(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 3);
+    assert_eq!(result.get_month_day(), 3);
+}
+
+#[test]
+fn test_advance_until_next_available_weekday() {
+    let available = RecurrenceVec::new(vec![Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 1, 0, 0, 0)
+            .earliest()
+            .unwrap(), // monday
+    );
+
+    let result = date.advance_until_next_available_weekday(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 2);
+    assert_eq!(result.get_month_day(), 2);
+}
+
+#[test]
+fn test_advance_until_next_available_weekday_changes_month() {
+    let available = RecurrenceVec::new(vec![Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
+            .earliest()
+            .unwrap(), // wednesday
+    );
+
+    let result = date.advance_until_next_available_weekday(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 2);
+    assert_eq!(result.get_month_day(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_weekday_changes_year() {
+    let available = RecurrenceVec::new(vec![Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
+            .earliest()
+            .unwrap(), // friday
+    );
+
+    let result = date.advance_until_next_available_weekday(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 3);
+}
+
+#[test]
+fn test_advance_until_next_available_weekday_only_one_available() {
+    let available = RecurrenceVec::new(vec![Weekday::Monday]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 2, 1, 0, 0, 0)
+            .earliest()
+            .unwrap(), // monday
+    );
+
+    let result = date.advance_until_next_available_weekday(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 2);
+    assert_eq!(result.get_month_day(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_year_day() {
+    let available = RecurrenceVec::new(vec![1, 40, 333]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_year_day(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 2);
+    assert_eq!(result.get_month_day(), 9);
+    assert_eq!(result.get_year_day(), 40);
+}
+
+#[test]
+fn test_advance_until_next_available_year_day_changes_year() {
+    let available = RecurrenceVec::new(vec![5, 20, 333]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_year_day(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 5);
+    assert_eq!(result.get_year_day(), 5);
+}
+
+#[test]
+fn test_advance_until_next_available_year_day_only_one_available() {
+    let available = RecurrenceVec::new(vec![5]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_year_day(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 5);
+    assert_eq!(result.get_year_day(), 5);
+}
+
+#[test]
+fn test_advance_until_next_available_year_day_invalid_days() {
+    let available = RecurrenceVec::new(vec![0, 70, 366]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_year_day(&available);
+
+    assert_eq!(result.get_year(), 2022);
+    assert_eq!(result.get_month(), 3);
+    assert_eq!(result.get_month_day(), 11);
+    assert_eq!(result.get_year_day(), 70);
+}
+
+#[test]
+fn test_advance_until_next_available_hour() {
+    let available = RecurrenceVec::new(vec![8, 13, 19]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_hour(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 19);
+}
+
+#[test]
+fn test_advance_until_next_available_hour_changes_day() {
+    let available = RecurrenceVec::new(vec![8, 13, 19]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 19, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_hour(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 2);
+    assert_eq!(result.get_hour(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_hour_only_one_available() {
+    let available = RecurrenceVec::new(vec![8]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 8, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_hour(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 2);
+    assert_eq!(result.get_hour(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_hour_invalid_hours() {
+    let available = RecurrenceVec::new(vec![0, 24, 25]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 8, 0, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_hour(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 2);
+    assert_eq!(result.get_hour(), 0);
+}
+
+#[test]
+fn test_advance_until_next_available_minute() {
+    let available = RecurrenceVec::new(vec![8, 13, 19]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_minute(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 13);
+    assert_eq!(result.get_minute(), 19);
+}
+
+#[test]
+fn test_advance_until_next_available_minute_changes_hour() {
+    let available = RecurrenceVec::new(vec![8, 13, 19]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 19, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_minute(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 14);
+    assert_eq!(result.get_minute(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_minute_only_one_available() {
+    let available = RecurrenceVec::new(vec![8]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 8, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_minute(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 14);
+    assert_eq!(result.get_minute(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_minute_invalid_minutes() {
+    let available = RecurrenceVec::new(vec![0, 60, 61]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 8, 0)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_minute(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 14);
+    assert_eq!(result.get_minute(), 0);
+}
+
+#[test]
+fn test_advance_until_next_available_second() {
+    let available = RecurrenceVec::new(vec![8, 13, 19]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 13)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_second(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 13);
+    assert_eq!(result.get_minute(), 13);
+    assert_eq!(result.get_second(), 19);
+}
+
+#[test]
+fn test_advance_until_next_available_second_changes_minute() {
+    let available = RecurrenceVec::new(vec![8, 13, 19]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 19)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_second(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 13);
+    assert_eq!(result.get_minute(), 14);
+    assert_eq!(result.get_second(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_second_only_one_available() {
+    let available = RecurrenceVec::new(vec![8]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 8)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_second(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 13);
+    assert_eq!(result.get_minute(), 14);
+    assert_eq!(result.get_second(), 8);
+}
+
+#[test]
+fn test_advance_until_next_available_second_invalid_seconds() {
+    let available = RecurrenceVec::new(vec![0, 60, 61]);
+    let date = Date::new(
+        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 8)
+            .earliest()
+            .unwrap(),
+    );
+
+    let result = date.advance_until_next_available_second(&available);
+
+    assert_eq!(result.get_year(), 2021);
+    assert_eq!(result.get_month(), 1);
+    assert_eq!(result.get_month_day(), 1);
+    assert_eq!(result.get_hour(), 13);
+    assert_eq!(result.get_minute(), 14);
+    assert_eq!(result.get_second(), 0);
 }

@@ -124,3 +124,13 @@ fn test_default_week_days() {
     assert!(response.contains(&Weekday::Saturday));
     assert!(response.contains(&Weekday::Sunday));
 }
+
+#[test]
+fn test_new_orders_items() {
+    let recurrence_vec = RecurrenceVec::new(vec![3, 1, 4, 2]);
+    assert_eq!(recurrence_vec.length(), 4);
+    assert_eq!(recurrence_vec.get_next(&1), 2);
+    assert_eq!(recurrence_vec.get_next(&2), 3);
+    assert_eq!(recurrence_vec.get_next(&3), 4);
+    assert_eq!(recurrence_vec.get_next(&4), 1);
+}
