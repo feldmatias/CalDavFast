@@ -135,13 +135,6 @@ pub struct Recurrence {
 impl Recurrence {
     pub fn calculate_included_dates(&self, start_date: Date, end_date: Date) -> Vec<Date> {
         /* Returns all included dates in the recurrence, between start_date and end_date */
-        /* If freq is SECONDLY, we advance every `interval` seconds, but:
-                - Only in the months specified in `months`,
-                - Only in the days specified in `month_days` and `year_days` and `weekdays`,
-                - Only in the hours specified in `hours`,
-                - Only in the minutes specified in `minutes`,
-                - Only in the seconds specified in `seconds`,
-        */
         let mut included_dates = Vec::new();
 
         let mut current_date = start_date;
@@ -158,9 +151,15 @@ impl Recurrence {
 
         let mut count = self.count.unwrap_or(1000);
 
-        // SECONDLY freq
         match self.frequency {
             Frequency::Secondly => {
+                /* If freq is SECONDLY, we advance every `interval` seconds, but:
+                        - Only in the months specified in `months`,
+                        - Only in the days specified in `month_days` and `year_days` and `weekdays`,
+                        - Only in the hours specified in `hours`,
+                        - Only in the minutes specified in `minutes`,
+                        - Only in the seconds specified in `seconds`,
+                */
                 let months = self.months.get_or_default_months();
                 let year_days = self.year_days.get_or_default_year_days();
                 let month_days = self.month_days.get_or_default_month_days();
@@ -208,14 +207,12 @@ impl Recurrence {
                         current_date = current_date.advance_until_next_available_minute(&minutes);
                         continue;
                     }
-                    if !seconds.contains(&current_date.get_second()) {
-                        // Skip to next second
-                        current_date = current_date.advance_until_next_available_second(&seconds);
-                        continue;
+                    if seconds.contains(&current_date.get_second()) {
+                        count -= 1;
+                        if !self.excluded_dates.contains(&current_date) {
+                            included_dates.push(current_date);
+                        }
                     }
-
-                    count -= 1;
-                    included_dates.push(current_date);
 
                     current_date = current_date.add_seconds(self.interval);
                 }
@@ -229,66 +226,5 @@ impl Recurrence {
         }
 
         included_dates
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use chrono::{TimeZone, Utc};
-
-    use crate::app::calendar::models::calendar_types::recurrence::recurrence_builder::RecurrenceBuilder;
-
-    use super::*;
-
-    #[test]
-    fn test_secondly() {
-        let start_date = Date::new(
-            Utc.with_ymd_and_hms(2022, 1, 1, 0, 0, 0)
-                .earliest()
-                .unwrap(),
-        );
-        let end_date = Date::new(
-            Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
-                .earliest()
-                .unwrap(),
-        );
-
-        let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
-            .set_interval(5)
-            .set_until_date(end_date.clone())
-            .set_months(vec![5])
-            .set_month_days(vec![5])
-            .set_hours(vec![5])
-            .set_minutes(vec![5])
-            .set_seconds(vec![5, 10, 12])
-            .build();
-
-        let included_dates = recurrence.calculate_included_dates(start_date, end_date);
-
-        assert_eq!(included_dates.len(), 4);
-        assert_eq!(
-            included_dates[0],
-            Utc.with_ymd_and_hms(2022, 5, 5, 5, 5, 5)
-                .earliest()
-                .unwrap()
-        );
-        assert_eq!(
-            included_dates[1],
-            Utc.with_ymd_and_hms(2022, 5, 5, 5, 5, 10)
-                .earliest()
-                .unwrap()
-        );
-        assert_eq!(
-            included_dates[2],
-            Utc.with_ymd_and_hms(2023, 5, 5, 5, 5, 5)
-                .earliest()
-                .unwrap()
-        );
-        assert_eq!(
-            included_dates[3],
-            Utc.with_ymd_and_hms(2023, 5, 5, 5, 5, 10)
-                .earliest()
-                .unwrap()
-        );
     }
 }

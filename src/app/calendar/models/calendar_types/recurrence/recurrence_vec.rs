@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use serde::{Deserialize, Serialize};
 
 use super::weekday::Weekday;
@@ -33,17 +35,29 @@ impl<T: PartialEq + Clone + Ord> RecurrenceVec<T> {
     }
 
     pub fn get_next(&self, item: &T) -> T {
-        let index = self.data.iter().position(|x| *x == *item);
-        match index {
-            Some(i) => {
-                if i == self.data.len() - 1 {
-                    self.data[0].clone()
-                } else {
-                    self.data[i + 1].clone()
+        /*
+        If item exists in data, return the next element. If it is the last one, return the first element.
+        If item does not exist in data, return the first element greater than item. If there is no such element, return the first element.
+        */
+        let mut next = self.data[0].clone();
+        for i in 0..self.data.len() {
+            match self.data[i].cmp(item) {
+                Ordering::Equal => {
+                    if i == self.data.len() - 1 {
+                        next = self.data[0].clone();
+                    } else {
+                        next = self.data[i + 1].clone();
+                    }
+                    break;
                 }
+                Ordering::Greater => {
+                    next = self.data[i].clone();
+                    break;
+                }
+                Ordering::Less => continue,
             }
-            None => self.data[0].clone(),
         }
+        next
     }
 }
 

@@ -24,10 +24,24 @@ fn test_get_or_default_without_data() {
 }
 
 #[test]
-fn test_get_next_when_item_does_not_exist_returns_first_element() {
+fn test_get_next_when_item_does_not_exist_returns_first_element_greater_than_item() {
+    let recurrence_vec = RecurrenceVec::new(vec![1, 2, 18]);
+    let response = recurrence_vec.get_next(&4);
+    assert_eq!(response, 18);
+}
+
+#[test]
+fn test_get_next_when_item_does_not_exist_and_no_item_greater_than_item_returns_first_element() {
     let recurrence_vec = RecurrenceVec::new(vec![1, 2, 3]);
     let response = recurrence_vec.get_next(&4);
     assert_eq!(response, 1);
+}
+
+#[test]
+fn test_get_next_when_item_does_not_exist_and_all_items_are_greater() {
+    let recurrence_vec = RecurrenceVec::new(vec![5, 18]);
+    let response = recurrence_vec.get_next(&3);
+    assert_eq!(response, 5);
 }
 
 #[test]
@@ -49,6 +63,20 @@ fn test_get_next_when_item_is_first_element_returns_second_element() {
     let recurrence_vec = RecurrenceVec::new(vec![1, 2, 3]);
     let response = recurrence_vec.get_next(&1);
     assert_eq!(response, 2);
+}
+
+#[test]
+fn test_get_next_when_item_exists_and_is_the_only_element() {
+    let recurrence_vec = RecurrenceVec::new(vec![1]);
+    let response = recurrence_vec.get_next(&1);
+    assert_eq!(response, 1);
+}
+
+#[test]
+fn test_get_next_when_item_does_not_exist_and_there_is_only_one_element() {
+    let recurrence_vec = RecurrenceVec::new(vec![1]);
+    let response = recurrence_vec.get_next(&6);
+    assert_eq!(response, 1);
 }
 
 #[test]

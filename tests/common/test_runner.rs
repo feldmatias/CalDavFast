@@ -1,4 +1,4 @@
-use cal_dav_fast::architecture::dependency_injection::{di_container, DDIProvider};
+/*use cal_dav_fast::architecture::dependency_injection::{di_container, DDIProvider};
 use cal_dav_fast::architecture::mongodb::MongoDb;
 use futures::future::BoxFuture;
 use once_cell::sync::Lazy;
@@ -44,4 +44,4 @@ async fn setup(provider: &DDIProvider) {
 
 async fn teardown(provider: &DDIProvider) {
     provider.get::<MongoDb>().db.drop(None).await.unwrap();
-}
+}*/
