@@ -1,16 +1,14 @@
 use cal_dav_fast::app::calendar::models::calendar_types::recurrence::{
-    date::Date, recurrence_vec::RecurrenceVec, weekday::Weekday,
+    recurrence_vec::RecurrenceVec, weekday::Weekday,
 };
-use chrono::{TimeZone, Utc};
 use pretty_assertions::assert_eq;
+
+mod common;
+use common::*;
 
 #[test]
 fn test_set_month_next_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_month(2).unwrap();
 
@@ -21,11 +19,7 @@ fn test_set_month_next_month() {
 
 #[test]
 fn test_set_month_skipping_months() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 8, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 8);
 
     let new_date = date.set_month(10).unwrap();
 
@@ -36,11 +30,7 @@ fn test_set_month_skipping_months() {
 
 #[test]
 fn test_set_month_same_month_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 5, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 5, day: 1);
 
     let new_date = date.set_month(5).unwrap();
 
@@ -51,11 +41,7 @@ fn test_set_month_same_month_changes_year() {
 
 #[test]
 fn test_set_month_previous_month_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 5, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 5, day: 1);
 
     let new_date = date.set_month(3).unwrap();
 
@@ -66,11 +52,7 @@ fn test_set_month_previous_month_changes_year() {
 
 #[test]
 fn test_set_month_on_invalid_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 30, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 30);
 
     let new_date = date.set_month(2).unwrap();
 
@@ -81,11 +63,7 @@ fn test_set_month_on_invalid_day() {
 
 #[test]
 fn test_set_month_invalid_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_month(13);
 
@@ -94,11 +72,7 @@ fn test_set_month_invalid_month() {
 
 #[test]
 fn test_set_month_day_next_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_month_day(2).unwrap();
 
@@ -109,11 +83,7 @@ fn test_set_month_day_next_day() {
 
 #[test]
 fn test_set_month_day_skipping_days() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_month_day(10).unwrap();
 
@@ -124,11 +94,7 @@ fn test_set_month_day_skipping_days() {
 
 #[test]
 fn test_set_month_day_same_day_changes_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 10);
 
     let new_date = date.set_month_day(10).unwrap();
 
@@ -139,11 +105,7 @@ fn test_set_month_day_same_day_changes_month() {
 
 #[test]
 fn test_set_month_day_previous_day_changes_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 10);
 
     let new_date = date.set_month_day(8).unwrap();
 
@@ -154,11 +116,7 @@ fn test_set_month_day_previous_day_changes_month() {
 
 #[test]
 fn test_set_month_day_invalid_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_month_day(32);
 
@@ -167,11 +125,7 @@ fn test_set_month_day_invalid_day() {
 
 #[test]
 fn test_set_month_day_december_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 10);
 
     let new_date = date.set_month_day(8).unwrap();
 
@@ -182,11 +136,7 @@ fn test_set_month_day_december_changes_year() {
 
 #[test]
 fn test_set_month_day_30_february() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 10);
 
     let new_date = date.set_month_day(30);
 
@@ -195,11 +145,7 @@ fn test_set_month_day_30_february() {
 
 #[test]
 fn test_set_month_day_31_for_30_day_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 4, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 4, day: 10);
 
     let new_date = date.set_month_day(31);
 
@@ -208,11 +154,7 @@ fn test_set_month_day_31_for_30_day_month() {
 
 #[test]
 fn test_set_month_day_31_for_31_day_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 10);
 
     let new_date = date.set_month_day(31).unwrap();
 
@@ -223,11 +165,7 @@ fn test_set_month_day_31_for_31_day_month() {
 
 #[test]
 fn test_set_month_day_29_february() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2);
 
     let new_date = date.set_month_day(29);
 
@@ -236,11 +174,7 @@ fn test_set_month_day_29_february() {
 
 #[test]
 fn test_set_month_day_29_february_leap_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2020, 2, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2020, month: 2);
 
     let new_date = date.set_month_day(29).unwrap();
 
@@ -251,11 +185,7 @@ fn test_set_month_day_29_february_leap_year() {
 
 #[test]
 fn test_set_month_day_28_february() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2);
 
     let new_date = date.set_month_day(28).unwrap();
 
@@ -266,11 +196,7 @@ fn test_set_month_day_28_february() {
 
 #[test]
 fn test_set_year_day_next_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_year_day(2).unwrap();
 
@@ -281,11 +207,7 @@ fn test_set_year_day_next_day() {
 
 #[test]
 fn test_set_year_day_skipping_days() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_year_day(10).unwrap();
 
@@ -296,11 +218,7 @@ fn test_set_year_day_skipping_days() {
 
 #[test]
 fn test_set_year_day_next_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_year_day(32).unwrap();
 
@@ -311,11 +229,7 @@ fn test_set_year_day_next_month() {
 
 #[test]
 fn test_set_year_day_skipping_months() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let new_date = date.set_year_day(100).unwrap();
 
@@ -326,11 +240,7 @@ fn test_set_year_day_skipping_months() {
 
 #[test]
 fn test_set_year_day_same_day_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 9, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 9);
 
     let new_date = date.set_year_day(9).unwrap();
 
@@ -341,11 +251,7 @@ fn test_set_year_day_same_day_changes_year() {
 
 #[test]
 fn test_set_year_day_previous_day_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 10, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 10);
 
     let new_date = date.set_year_day(9).unwrap();
 
@@ -356,11 +262,7 @@ fn test_set_year_day_previous_day_changes_year() {
 
 #[test]
 fn test_set_year_day_366() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 8, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_year_day(366);
 
@@ -369,11 +271,7 @@ fn test_set_year_day_366() {
 
 #[test]
 fn test_set_year_day_366_leap_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2020, 1, 8, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2020);
 
     let new_date = date.set_year_day(366).unwrap();
 
@@ -384,11 +282,7 @@ fn test_set_year_day_366_leap_year() {
 
 #[test]
 fn test_set_year_day_365() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 8, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021);
 
     let new_date = date.set_year_day(365).unwrap();
 
@@ -399,11 +293,7 @@ fn test_set_year_day_365() {
 
 #[test]
 fn test_set_year_day_invalid() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 8, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_year_day(367);
 
@@ -412,12 +302,7 @@ fn test_set_year_day_invalid() {
 
 #[test]
 fn test_set_weekday_next_day() {
-    // Sunday
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 3); // Sunday
 
     let new_date = date.set_weekday(Weekday::Monday).unwrap();
 
@@ -429,12 +314,7 @@ fn test_set_weekday_next_day() {
 
 #[test]
 fn test_set_weekday_same_day() {
-    // Monday
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 4, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 4); // Monday
 
     let new_date = date.set_weekday(Weekday::Monday).unwrap();
 
@@ -446,12 +326,7 @@ fn test_set_weekday_same_day() {
 
 #[test]
 fn test_set_weekday_previous_day() {
-    // Tuesday
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 5, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 5); // Tuesday
 
     let new_date = date.set_weekday(Weekday::Monday).unwrap();
 
@@ -463,12 +338,7 @@ fn test_set_weekday_previous_day() {
 
 #[test]
 fn test_set_weekday_changes_month() {
-    // Friday
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 31); // Friday
 
     let new_date = date.set_weekday(Weekday::Monday).unwrap();
 
@@ -480,12 +350,7 @@ fn test_set_weekday_changes_month() {
 
 #[test]
 fn test_set_weekday_changes_year() {
-    // Friday
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31); // Friday
 
     let new_date = date.set_weekday(Weekday::Monday).unwrap();
 
@@ -497,12 +362,7 @@ fn test_set_weekday_changes_year() {
 
 #[test]
 fn test_set_weekday_changes_year_leap_year() {
-    // Thursday
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2020, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2020, month: 12, day: 31); // Thursday
 
     let new_date = date.set_weekday(Weekday::Monday).unwrap();
 
@@ -514,11 +374,7 @@ fn test_set_weekday_changes_year_leap_year() {
 
 #[test]
 fn test_set_hour_next_hour() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0);
 
     let new_date = date.set_hour(1).unwrap();
 
@@ -530,11 +386,7 @@ fn test_set_hour_next_hour() {
 
 #[test]
 fn test_set_hour_skipping_hours() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0);
 
     let new_date = date.set_hour(3).unwrap();
 
@@ -546,11 +398,7 @@ fn test_set_hour_skipping_hours() {
 
 #[test]
 fn test_set_hour_same_hour_changes_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 10, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 10);
 
     let new_date = date.set_hour(10).unwrap();
 
@@ -562,11 +410,7 @@ fn test_set_hour_same_hour_changes_day() {
 
 #[test]
 fn test_set_hour_previous_hour_changes_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 15, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 15);
 
     let new_date = date.set_hour(10).unwrap();
 
@@ -578,11 +422,7 @@ fn test_set_hour_previous_hour_changes_day() {
 
 #[test]
 fn test_set_hour_changes_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 31, 23, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 23);
 
     let new_date = date.set_hour(10).unwrap();
 
@@ -594,11 +434,7 @@ fn test_set_hour_changes_month() {
 
 #[test]
 fn test_set_hour_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 23, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31, hour: 23);
 
     let new_date = date.set_hour(10).unwrap();
 
@@ -610,11 +446,7 @@ fn test_set_hour_changes_year() {
 
 #[test]
 fn test_set_hour_invalid_hour() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 23, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_hour(24);
 
@@ -623,11 +455,7 @@ fn test_set_hour_invalid_hour() {
 
 #[test]
 fn test_set_minute_next_minute() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0);
 
     let new_date = date.set_minute(1).unwrap();
 
@@ -640,11 +468,7 @@ fn test_set_minute_next_minute() {
 
 #[test]
 fn test_set_minute_skipping_minutes() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0);
 
     let new_date = date.set_minute(33).unwrap();
 
@@ -657,11 +481,7 @@ fn test_set_minute_skipping_minutes() {
 
 #[test]
 fn test_set_minute_same_minute_changes_hour() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 10, 10, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 10, minute: 10);
 
     let new_date = date.set_minute(10).unwrap();
 
@@ -674,11 +494,7 @@ fn test_set_minute_same_minute_changes_hour() {
 
 #[test]
 fn test_set_minute_previous_minute_changes_hour() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 10, 10, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 10, minute: 10);
 
     let new_date = date.set_minute(9).unwrap();
 
@@ -691,11 +507,7 @@ fn test_set_minute_previous_minute_changes_hour() {
 
 #[test]
 fn test_set_minute_changes_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 23, 59, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 23, minute: 59);
 
     let new_date = date.set_minute(10).unwrap();
 
@@ -708,11 +520,7 @@ fn test_set_minute_changes_day() {
 
 #[test]
 fn test_set_minute_changes_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 31, 23, 59, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 23, minute: 59);
 
     let new_date = date.set_minute(10).unwrap();
 
@@ -725,11 +533,7 @@ fn test_set_minute_changes_month() {
 
 #[test]
 fn test_set_minute_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 23, 59, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59);
 
     let new_date = date.set_minute(10).unwrap();
 
@@ -742,11 +546,7 @@ fn test_set_minute_changes_year() {
 
 #[test]
 fn test_set_minute_invalid_minute() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 23, 59, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_minute(60);
 
@@ -755,11 +555,7 @@ fn test_set_minute_invalid_minute() {
 
 #[test]
 fn test_set_second_next_second() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
     let new_date = date.set_second(1).unwrap();
 
@@ -773,11 +569,7 @@ fn test_set_second_next_second() {
 
 #[test]
 fn test_set_second_skipping_seconds() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
     let new_date = date.set_second(33).unwrap();
 
@@ -791,11 +583,7 @@ fn test_set_second_skipping_seconds() {
 
 #[test]
 fn test_set_second_same_second_changes_minute() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 10, 10, 10)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 10, minute: 10, second: 10);
 
     let new_date = date.set_second(10).unwrap();
 
@@ -809,11 +597,7 @@ fn test_set_second_same_second_changes_minute() {
 
 #[test]
 fn test_set_second_previous_second_changes_minute() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 10, 10, 10)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 10, minute: 10, second: 10);
 
     let new_date = date.set_second(9).unwrap();
 
@@ -827,11 +611,7 @@ fn test_set_second_previous_second_changes_minute() {
 
 #[test]
 fn test_set_second_changes_hour() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 10, 59, 59)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 10, minute: 59, second: 59);
 
     let new_date = date.set_second(10).unwrap();
 
@@ -845,11 +625,7 @@ fn test_set_second_changes_hour() {
 
 #[test]
 fn test_set_second_changes_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 23, 59, 59)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 23, minute: 59, second: 59);
 
     let new_date = date.set_second(10).unwrap();
 
@@ -863,11 +639,7 @@ fn test_set_second_changes_day() {
 
 #[test]
 fn test_set_second_changes_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 31, 23, 59, 59)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 23, minute: 59, second: 59);
 
     let new_date = date.set_second(10).unwrap();
 
@@ -881,11 +653,7 @@ fn test_set_second_changes_month() {
 
 #[test]
 fn test_set_second_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 23, 59, 59)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59, second: 59);
 
     let new_date = date.set_second(10).unwrap();
 
@@ -899,11 +667,7 @@ fn test_set_second_changes_year() {
 
 #[test]
 fn test_set_second_invalid_second() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date);
 
     let new_date = date.set_second(60);
 
@@ -912,11 +676,7 @@ fn test_set_second_invalid_second() {
 
 #[test]
 fn test_add_seconds() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
     let new_date = date.add_seconds(33);
 
@@ -930,11 +690,7 @@ fn test_add_seconds() {
 
 #[test]
 fn test_add_seconds_changes_minute() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
     let new_date = date.add_seconds(70);
 
@@ -948,11 +704,7 @@ fn test_add_seconds_changes_minute() {
 
 #[test]
 fn test_add_seconds_changes_hour() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
     let new_date = date.add_seconds(3601);
 
@@ -966,11 +718,7 @@ fn test_add_seconds_changes_hour() {
 
 #[test]
 fn test_add_seconds_changes_day() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
     let new_date = date.add_seconds(86401);
 
@@ -984,11 +732,7 @@ fn test_add_seconds_changes_day() {
 
 #[test]
 fn test_add_seconds_changes_month() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 0, minute: 0, second: 0);
 
     let new_date = date.add_seconds(86401);
 
@@ -1002,11 +746,7 @@ fn test_add_seconds_changes_month() {
 
 #[test]
 fn test_add_seconds_changes_year() {
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31, hour: 0, minute: 0, second: 0);
 
     let new_date = date.add_seconds(86401);
 
@@ -1021,11 +761,7 @@ fn test_add_seconds_changes_year() {
 #[test]
 fn test_advance_until_next_available_month() {
     let available = RecurrenceVec::new(vec![1, 2, 3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 18, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 18);
 
     let result = date.advance_until_next_available_month(&available);
 
@@ -1037,11 +773,7 @@ fn test_advance_until_next_available_month() {
 #[test]
 fn test_advance_until_next_available_month_changes_year() {
     let available = RecurrenceVec::new(vec![1, 2, 3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 3, 18, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 3, day: 18);
 
     let result = date.advance_until_next_available_month(&available);
 
@@ -1053,11 +785,7 @@ fn test_advance_until_next_available_month_changes_year() {
 #[test]
 fn test_advance_until_next_available_month_invalid_months() {
     let available = RecurrenceVec::new(vec![1, 2, 3, 13, 18]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 3, 18, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 3, day: 18);
 
     let result = date.advance_until_next_available_month(&available);
 
@@ -1069,11 +797,7 @@ fn test_advance_until_next_available_month_invalid_months() {
 #[test]
 fn test_advance_until_next_available_month_only_one_available() {
     let available = RecurrenceVec::new(vec![3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 3, 18, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 3, day: 18);
 
     let result = date.advance_until_next_available_month(&available);
 
@@ -1085,11 +809,7 @@ fn test_advance_until_next_available_month_only_one_available() {
 #[test]
 fn test_advance_until_next_available_month_day() {
     let available = RecurrenceVec::new(vec![1, 2, 3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 1);
 
     let result = date.advance_until_next_available_month_day(&available);
 
@@ -1101,11 +821,7 @@ fn test_advance_until_next_available_month_day() {
 #[test]
 fn test_advance_until_next_available_month_day_changes_month() {
     let available = RecurrenceVec::new(vec![1, 2, 3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 3);
 
     let result = date.advance_until_next_available_month_day(&available);
 
@@ -1117,11 +833,7 @@ fn test_advance_until_next_available_month_day_changes_month() {
 #[test]
 fn test_advance_until_next_available_month_day_changes_year() {
     let available = RecurrenceVec::new(vec![1, 2, 3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 3);
 
     let result = date.advance_until_next_available_month_day(&available);
 
@@ -1133,11 +845,7 @@ fn test_advance_until_next_available_month_day_changes_year() {
 #[test]
 fn test_advance_until_next_available_month_day_invalid_days() {
     let available = RecurrenceVec::new(vec![1, 2, 3, 32, 67]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 3);
 
     let result = date.advance_until_next_available_month_day(&available);
 
@@ -1149,11 +857,7 @@ fn test_advance_until_next_available_month_day_invalid_days() {
 #[test]
 fn test_advance_until_next_available_month_day_invalid_days_february() {
     let available = RecurrenceVec::new(vec![1, 2, 3, 30]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 3);
 
     let result = date.advance_until_next_available_month_day(&available);
 
@@ -1165,11 +869,7 @@ fn test_advance_until_next_available_month_day_invalid_days_february() {
 #[test]
 fn test_advance_until_next_available_month_day_only_one_available() {
     let available = RecurrenceVec::new(vec![3]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 3);
 
     let result = date.advance_until_next_available_month_day(&available);
 
@@ -1181,11 +881,7 @@ fn test_advance_until_next_available_month_day_only_one_available() {
 #[test]
 fn test_advance_until_next_available_weekday() {
     let available = RecurrenceVec::new(vec![Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(), // monday
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 1); // Monday
 
     let result = date.advance_until_next_available_weekday(&available);
 
@@ -1197,11 +893,7 @@ fn test_advance_until_next_available_weekday() {
 #[test]
 fn test_advance_until_next_available_weekday_changes_month() {
     let available = RecurrenceVec::new(vec![Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 3, 0, 0, 0)
-            .earliest()
-            .unwrap(), // wednesday
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 3); // Wednesday
 
     let result = date.advance_until_next_available_weekday(&available);
 
@@ -1213,11 +905,7 @@ fn test_advance_until_next_available_weekday_changes_month() {
 #[test]
 fn test_advance_until_next_available_weekday_changes_year() {
     let available = RecurrenceVec::new(vec![Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(), // friday
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31); // Friday
 
     let result = date.advance_until_next_available_weekday(&available);
 
@@ -1229,11 +917,7 @@ fn test_advance_until_next_available_weekday_changes_year() {
 #[test]
 fn test_advance_until_next_available_weekday_only_one_available() {
     let available = RecurrenceVec::new(vec![Weekday::Monday]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 2, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(), // monday
-    );
+    let date = create!(Date, year: 2021, month: 2, day: 1); // Monday
 
     let result = date.advance_until_next_available_weekday(&available);
 
@@ -1245,11 +929,7 @@ fn test_advance_until_next_available_weekday_only_one_available() {
 #[test]
 fn test_advance_until_next_available_year_day() {
     let available = RecurrenceVec::new(vec![1, 40, 333]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1);
 
     let result = date.advance_until_next_available_year_day(&available);
 
@@ -1262,11 +942,7 @@ fn test_advance_until_next_available_year_day() {
 #[test]
 fn test_advance_until_next_available_year_day_changes_year() {
     let available = RecurrenceVec::new(vec![5, 20, 333]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 31);
 
     let result = date.advance_until_next_available_year_day(&available);
 
@@ -1279,11 +955,7 @@ fn test_advance_until_next_available_year_day_changes_year() {
 #[test]
 fn test_advance_until_next_available_year_day_only_one_available() {
     let available = RecurrenceVec::new(vec![5]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 5);
 
     let result = date.advance_until_next_available_year_day(&available);
 
@@ -1296,11 +968,7 @@ fn test_advance_until_next_available_year_day_only_one_available() {
 #[test]
 fn test_advance_until_next_available_year_day_invalid_days() {
     let available = RecurrenceVec::new(vec![0, 70, 366]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 12, 31, 0, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 12, day: 17);
 
     let result = date.advance_until_next_available_year_day(&available);
 
@@ -1313,11 +981,7 @@ fn test_advance_until_next_available_year_day_invalid_days() {
 #[test]
 fn test_advance_until_next_available_hour() {
     let available = RecurrenceVec::new(vec![8, 13, 19]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13);
 
     let result = date.advance_until_next_available_hour(&available);
 
@@ -1330,11 +994,7 @@ fn test_advance_until_next_available_hour() {
 #[test]
 fn test_advance_until_next_available_hour_changes_day() {
     let available = RecurrenceVec::new(vec![8, 13, 19]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 19, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 19);
 
     let result = date.advance_until_next_available_hour(&available);
 
@@ -1347,11 +1007,7 @@ fn test_advance_until_next_available_hour_changes_day() {
 #[test]
 fn test_advance_until_next_available_hour_only_one_available() {
     let available = RecurrenceVec::new(vec![8]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 8, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 8);
 
     let result = date.advance_until_next_available_hour(&available);
 
@@ -1363,12 +1019,8 @@ fn test_advance_until_next_available_hour_only_one_available() {
 
 #[test]
 fn test_advance_until_next_available_hour_invalid_hours() {
-    let available = RecurrenceVec::new(vec![0, 24, 25]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 8, 0, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let available = RecurrenceVec::new(vec![0, 8, 24, 25]);
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 8);
 
     let result = date.advance_until_next_available_hour(&available);
 
@@ -1381,11 +1033,7 @@ fn test_advance_until_next_available_hour_invalid_hours() {
 #[test]
 fn test_advance_until_next_available_minute() {
     let available = RecurrenceVec::new(vec![8, 13, 19]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 13);
 
     let result = date.advance_until_next_available_minute(&available);
 
@@ -1399,11 +1047,7 @@ fn test_advance_until_next_available_minute() {
 #[test]
 fn test_advance_until_next_available_minute_changes_hour() {
     let available = RecurrenceVec::new(vec![8, 13, 19]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 19, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 19);
 
     let result = date.advance_until_next_available_minute(&available);
 
@@ -1417,11 +1061,7 @@ fn test_advance_until_next_available_minute_changes_hour() {
 #[test]
 fn test_advance_until_next_available_minute_only_one_available() {
     let available = RecurrenceVec::new(vec![8]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 8, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 8);
 
     let result = date.advance_until_next_available_minute(&available);
 
@@ -1434,12 +1074,8 @@ fn test_advance_until_next_available_minute_only_one_available() {
 
 #[test]
 fn test_advance_until_next_available_minute_invalid_minutes() {
-    let available = RecurrenceVec::new(vec![0, 60, 61]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 8, 0)
-            .earliest()
-            .unwrap(),
-    );
+    let available = RecurrenceVec::new(vec![0, 8, 60, 61]);
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 8);
 
     let result = date.advance_until_next_available_minute(&available);
 
@@ -1453,11 +1089,7 @@ fn test_advance_until_next_available_minute_invalid_minutes() {
 #[test]
 fn test_advance_until_next_available_second() {
     let available = RecurrenceVec::new(vec![8, 13, 19]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 13)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 13, second: 13);
 
     let result = date.advance_until_next_available_second(&available);
 
@@ -1472,11 +1104,7 @@ fn test_advance_until_next_available_second() {
 #[test]
 fn test_advance_until_next_available_second_changes_minute() {
     let available = RecurrenceVec::new(vec![8, 13, 19]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 19)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 13, second: 19);
 
     let result = date.advance_until_next_available_second(&available);
 
@@ -1491,11 +1119,7 @@ fn test_advance_until_next_available_second_changes_minute() {
 #[test]
 fn test_advance_until_next_available_second_only_one_available() {
     let available = RecurrenceVec::new(vec![8]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 8)
-            .earliest()
-            .unwrap(),
-    );
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 13, second: 8);
 
     let result = date.advance_until_next_available_second(&available);
 
@@ -1509,12 +1133,8 @@ fn test_advance_until_next_available_second_only_one_available() {
 
 #[test]
 fn test_advance_until_next_available_second_invalid_seconds() {
-    let available = RecurrenceVec::new(vec![0, 60, 61]);
-    let date = Date::new(
-        Utc.with_ymd_and_hms(2021, 1, 1, 13, 13, 8)
-            .earliest()
-            .unwrap(),
-    );
+    let available = RecurrenceVec::new(vec![0, 8, 60, 61]);
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 13, minute: 13, second: 8);
 
     let result = date.advance_until_next_available_second(&available);
 
