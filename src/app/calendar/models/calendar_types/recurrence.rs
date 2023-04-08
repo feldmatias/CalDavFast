@@ -81,13 +81,14 @@ If multiple BYxxx rule parts are specified, then after evaluating
 */
 
 pub mod date;
+pub mod recurrence_builder;
 pub mod recurrence_vec;
 pub mod weekday;
 use serde::{Deserialize, Serialize};
 
 use self::{date::Date, recurrence_vec::RecurrenceVec, weekday::Weekday};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub enum Frequency {
     Secondly,
     Minutely,
@@ -98,7 +99,7 @@ pub enum Frequency {
     Yearly,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct RecurrenceDay {
     // 20th monday or first sunday
     pub recurence: u32,
@@ -235,6 +236,8 @@ impl Recurrence {
 mod test {
     use chrono::{TimeZone, Utc};
 
+    use crate::app::calendar::models::calendar_types::recurrence::recurrence_builder::RecurrenceBuilder;
+
     use super::*;
 
     #[test]
@@ -250,23 +253,15 @@ mod test {
                 .unwrap(),
         );
 
-        let recurrence = Recurrence {
-            frequency: Frequency::Secondly,
-            interval: 5,
-            until_date: Some(end_date.clone()),
-            week_start: None,
-            weekdays: RecurrenceVec::default(),
-            hours: RecurrenceVec::new(vec![5]),
-            minutes: RecurrenceVec::new(vec![5]),
-            seconds: RecurrenceVec::new(vec![5, 10, 12]),
-            month_days: RecurrenceVec::new(vec![5]),
-            months: RecurrenceVec::new(vec![5]),
-            year_days: RecurrenceVec::default(),
-            count: None,
-            excluded_dates: Vec::default(),
-            set_pos: RecurrenceVec::default(),
-            recurrences: Vec::default(),
-        };
+        let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+            .set_interval(5)
+            .set_until_date(end_date.clone())
+            .set_months(vec![5])
+            .set_month_days(vec![5])
+            .set_hours(vec![5])
+            .set_minutes(vec![5])
+            .set_seconds(vec![5, 10, 12])
+            .build();
 
         let included_dates = recurrence.calculate_included_dates(start_date, end_date);
 
