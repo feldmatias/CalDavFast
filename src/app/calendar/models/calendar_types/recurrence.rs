@@ -133,11 +133,8 @@ pub struct Recurrence {
 }
 
 impl Recurrence {
-    pub fn calculate_included_dates(&self, start_date: Date, end_date: Date) -> Vec<Date> {
+    pub fn calculate_ocurrences(&self, start_date: Date, end_date: Date) -> Vec<Date> {
         /* Returns all included dates in the recurrence, between start_date and end_date */
-        let mut included_dates = Vec::new();
-
-        let mut current_date = start_date;
         let ending_date = match &self.until_date {
             Some(date) => {
                 if date > &end_date {
@@ -149,82 +146,92 @@ impl Recurrence {
             None => end_date,
         };
 
-        let mut count = self.count.unwrap_or(1000);
+        let count = self.count.unwrap_or(1000);
 
         match self.frequency {
             Frequency::Secondly => {
-                /* If freq is SECONDLY, we advance every `interval` seconds, but:
-                        - Only in the months specified in `months`,
-                        - Only in the days specified in `month_days` and `year_days` and `weekdays`,
-                        - Only in the hours specified in `hours`,
-                        - Only in the minutes specified in `minutes`,
-                        - Only in the seconds specified in `seconds`,
-                */
-                let months = self.months.get_or_default_months();
-                let year_days = self.year_days.get_or_default_year_days();
-                let month_days = self.month_days.get_or_default_month_days();
-                let weekdays = self.weekdays.get_or_default_weekdays();
-                let hours = self.hours.get_or_default_hours();
-                let minutes = self.minutes.get_or_default_minutes();
-                let seconds = self.seconds.get_or_default_seconds();
+                self.calculate_ocurrences_secondly(start_date, ending_date, count)
+            }
+            Frequency::Minutely => Vec::new(), // TODO
+            Frequency::Hourly => Vec::new(),   // TODO
+            Frequency::Daily => Vec::new(),    // TODO
+            Frequency::Weekly => Vec::new(),   // TODO
+            Frequency::Monthly => Vec::new(),  // TODO
+            Frequency::Yearly => Vec::new(),   // TODO
+        }
+    }
 
-                loop {
-                    if count == 0 {
-                        break;
-                    }
-                    if current_date > ending_date {
-                        break;
-                    }
-                    if !months.contains(&current_date.get_month()) {
-                        // Skip to next month
-                        current_date = current_date.advance_until_next_available_month(&months);
-                        continue;
-                    }
-                    if !year_days.contains(&current_date.get_year_day()) {
-                        // Skip to next year day
-                        current_date =
-                            current_date.advance_until_next_available_year_day(&year_days);
-                        continue;
-                    }
-                    if !month_days.contains(&current_date.get_month_day()) {
-                        // Skip to next month day
-                        current_date =
-                            current_date.advance_until_next_available_month_day(&month_days);
-                        continue;
-                    }
-                    if !weekdays.contains(&current_date.get_weekday()) {
-                        // Skip to next weekday
-                        current_date = current_date.advance_until_next_available_weekday(&weekdays);
-                        continue;
-                    }
-                    if !hours.contains(&current_date.get_hour()) {
-                        // Skip to next hour
-                        current_date = current_date.advance_until_next_available_hour(&hours);
-                        continue;
-                    }
-                    if !minutes.contains(&current_date.get_minute()) {
-                        // Skip to next minute
-                        current_date = current_date.advance_until_next_available_minute(&minutes);
-                        continue;
-                    }
-                    if seconds.contains(&current_date.get_second()) {
-                        count -= 1;
-                        if !self.excluded_dates.contains(&current_date) {
-                            included_dates.push(current_date);
-                        }
-                    }
+    fn calculate_ocurrences_secondly(
+        &self,
+        start_date: Date,
+        ending_date: Date,
+        count: u32,
+    ) -> Vec<Date> {
+        /* If freq is SECONDLY, we advance every `interval` seconds, but:
+                - Only in the months specified in `months`,
+                - Only in the days specified in `month_days` and `year_days` and `weekdays`,
+                - Only in the hours specified in `hours`,
+                - Only in the minutes specified in `minutes`,
+            Only accept dates if the seconds are specified in `seconds`,
+        */
+        let mut ocurrences = Vec::new();
+        let mut count = count;
+        let mut current_date = start_date;
 
-                    current_date = current_date.add_seconds(self.interval);
+        let months = self.months.get_or_default_months();
+        let year_days = self.year_days.get_or_default_year_days();
+        let month_days = self.month_days.get_or_default_month_days();
+        let weekdays = self.weekdays.get_or_default_weekdays();
+        let hours = self.hours.get_or_default_hours();
+        let minutes = self.minutes.get_or_default_minutes();
+        let seconds = self.seconds.get_or_default_seconds();
+
+        loop {
+            if count == 0 {
+                break;
+            }
+            if current_date > ending_date {
+                break;
+            }
+            if !months.contains(&current_date.get_month()) {
+                // Skip to next month
+                current_date = current_date.advance_until_next_available_month(&months);
+                continue;
+            }
+            if !year_days.contains(&current_date.get_year_day()) {
+                // Skip to next year day
+                current_date = current_date.advance_until_next_available_year_day(&year_days);
+                continue;
+            }
+            if !month_days.contains(&current_date.get_month_day()) {
+                // Skip to next month day
+                current_date = current_date.advance_until_next_available_month_day(&month_days);
+                continue;
+            }
+            if !weekdays.contains(&current_date.get_weekday()) {
+                // Skip to next weekday
+                current_date = current_date.advance_until_next_available_weekday(&weekdays);
+                continue;
+            }
+            if !hours.contains(&current_date.get_hour()) {
+                // Skip to next hour
+                current_date = current_date.advance_until_next_available_hour(&hours);
+                continue;
+            }
+            if !minutes.contains(&current_date.get_minute()) {
+                // Skip to next minute
+                current_date = current_date.advance_until_next_available_minute(&minutes);
+                continue;
+            }
+            if seconds.contains(&current_date.get_second()) {
+                count -= 1;
+                if !self.excluded_dates.contains(&current_date) {
+                    ocurrences.push(current_date);
                 }
             }
-            Frequency::Minutely => (), // TODO
-            Frequency::Hourly => (),   // TODO
-            Frequency::Daily => (),    // TODO
-            Frequency::Weekly => (),   // TODO
-            Frequency::Monthly => (),  // TODO
-            Frequency::Yearly => (),   // TODO
-        }
 
-        included_dates
+            current_date = current_date.add_seconds(self.interval);
+        }
+        ocurrences
     }
 }
