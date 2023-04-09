@@ -193,36 +193,37 @@ impl Recurrence {
             if current_date > ending_date {
                 break;
             }
+
+            let mut skip_to_date: Option<Date> = None;
             if !months.contains(&current_date.get_month()) {
                 // Skip to next month
-                current_date = current_date.advance_until_next_available_month(&months);
-                continue;
-            }
-            if !year_days.contains(&current_date.get_year_day()) {
+                skip_to_date = Some(current_date.advance_until_next_available_month(&months));
+            } else if !year_days.contains(&current_date.get_year_day()) {
                 // Skip to next year day
-                current_date = current_date.advance_until_next_available_year_day(&year_days);
-                continue;
-            }
-            if !month_days.contains(&current_date.get_month_day()) {
+                skip_to_date = Some(current_date.advance_until_next_available_year_day(&year_days));
+            } else if !month_days.contains(&current_date.get_month_day()) {
                 // Skip to next month day
-                current_date = current_date.advance_until_next_available_month_day(&month_days);
-                continue;
-            }
-            if !weekdays.contains(&current_date.get_weekday()) {
+                skip_to_date =
+                    Some(current_date.advance_until_next_available_month_day(&month_days));
+            } else if !weekdays.contains(&current_date.get_weekday()) {
                 // Skip to next weekday
-                current_date = current_date.advance_until_next_available_weekday(&weekdays);
-                continue;
-            }
-            if !hours.contains(&current_date.get_hour()) {
+                skip_to_date = Some(current_date.advance_until_next_available_weekday(&weekdays));
+            } else if !hours.contains(&current_date.get_hour()) {
                 // Skip to next hour
-                current_date = current_date.advance_until_next_available_hour(&hours);
-                continue;
-            }
-            if !minutes.contains(&current_date.get_minute()) {
+                skip_to_date = Some(current_date.advance_until_next_available_hour(&hours));
+            } else if !minutes.contains(&current_date.get_minute()) {
                 // Skip to next minute
-                current_date = current_date.advance_until_next_available_minute(&minutes);
+                skip_to_date = Some(current_date.advance_until_next_available_minute(&minutes));
+            }
+
+            if let Some(date) = skip_to_date {
+                let seconds_to_add = self.calculate_interval_to_skip_ocurrence(
+                    current_date.seconds_to_date(&date) as u32,
+                );
+                current_date = current_date.add_seconds(seconds_to_add);
                 continue;
             }
+
             if seconds.contains(&current_date.get_second()) {
                 count -= 1;
                 if !self.excluded_dates.contains(&current_date) {
@@ -233,5 +234,14 @@ impl Recurrence {
             current_date = current_date.add_seconds(self.interval);
         }
         ocurrences
+    }
+
+    fn calculate_interval_to_skip_ocurrence(&self, time: u32) -> u32 {
+        let modulo = time % self.interval;
+        if modulo == 0 {
+            return time;
+        }
+
+        time + self.interval - modulo
     }
 }

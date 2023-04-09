@@ -248,6 +248,12 @@ impl Date {
     }
 }
 
+impl Date {
+    pub fn seconds_to_date(&self, other: &Self) -> i64 {
+        (other.date - self.date).num_seconds()
+    }
+}
+
 impl std::cmp::PartialEq<DateTime<Utc>> for Date {
     fn eq(&self, other: &DateTime<Utc>) -> bool {
         self.date == *other

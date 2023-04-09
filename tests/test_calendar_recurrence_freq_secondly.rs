@@ -1,5 +1,5 @@
 use cal_dav_fast::app::calendar::models::calendar_types::recurrence::{
-    recurrence_builder::RecurrenceBuilder, Frequency,
+    recurrence_builder::RecurrenceBuilder, weekday::Weekday, Frequency,
 };
 use pretty_assertions::assert_eq;
 
@@ -420,6 +420,43 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_year_d
 }
 
 #[test]
+fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_weekdays() {
+    /*
+    Starts at January 1st 00:00:00 and ends at May 9th 08:05:18.
+    Allowed seconds are 46.
+    Allowed minutes are 3.
+    Allowed hours are 1.
+    Allowed days are 1 (monday), 5 (friday), 9 (tuesday), 10 (wednesday), 23 (tuesday).
+    Allower month is March.
+    Allowed weekdays are monday and friday.
+    */
+    let start_date = create!(Date, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+    let end_date = create!(Date, month: 5, day: 9, hour: 8, minute: 5, second: 18);
+
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+        .set_until_date(end_date.clone())
+        .set_seconds(vec![46])
+        .set_minutes(vec![3])
+        .set_hours(vec![1])
+        .set_month_days(vec![1, 5, 9, 10, 23])
+        .set_months(vec![3])
+        .set_weekdays(vec![Weekday::Monday, Weekday::Friday])
+        .build();
+
+    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+
+    assert_eq!(ocurrences.len(), 2);
+    assert_eq!(
+        ocurrences[0],
+        create!(Date, month: 3, day: 1, hour: 1, minute: 3, second: 46)
+    );
+    assert_eq!(
+        ocurrences[1],
+        create!(Date, month: 3, day: 5, hour: 1, minute: 3, second: 46)
+    );
+}
+
+#[test]
 fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_months() {
     /*
     Starts at January 1st 00:00:00 and ends at May 9th 08:05:18.
@@ -527,6 +564,39 @@ fn test_secondly_interval5_one_month_one_day_one_hour_one_minute_three_seconds()
     assert_eq!(
         ocurrences[3],
         create!(Date, year: 2023, month: 5, day:5, hour: 5, minute: 5, second: 10)
+    );
+}
+
+#[test]
+fn test_secondly_interval5_one_month_one_day_one_hour_one_minute_three_seconds_start_at_7() {
+    /*
+    Starts on January 2022 and ends on January 2024. Allowed months are May.
+    Allowed days are 5th. Allowed hours are 5 AM. Allowed minutes are 5. Allowed seconds are 5, 10, and 12.
+    Frequency is every 5 seconds. Starts at second 7
+    */
+    let start_date = create!(Date, year: 2022, month: 1, day: 1, hour: 0, minute: 0, second: 7);
+    let end_date = create!(Date, year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+        .set_interval(5)
+        .set_until_date(end_date.clone())
+        .set_months(vec![5])
+        .set_month_days(vec![5])
+        .set_hours(vec![5])
+        .set_minutes(vec![5])
+        .set_seconds(vec![5, 10, 12])
+        .build();
+
+    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+
+    assert_eq!(ocurrences.len(), 2);
+    assert_eq!(
+        ocurrences[0],
+        create!(Date, year: 2022, month: 5, day:5, hour: 5, minute: 5, second: 12)
+    );
+    assert_eq!(
+        ocurrences[1],
+        create!(Date, year: 2023, month: 5, day:5, hour: 5, minute: 5, second: 12)
     );
 }
 

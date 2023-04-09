@@ -675,90 +675,6 @@ fn test_set_second_invalid_second() {
 }
 
 #[test]
-fn test_add_seconds() {
-    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
-
-    let new_date = date.add_seconds(33);
-
-    assert_eq!(new_date.get_year(), 2021);
-    assert_eq!(new_date.get_month(), 1);
-    assert_eq!(new_date.get_month_day(), 1);
-    assert_eq!(new_date.get_hour(), 0);
-    assert_eq!(new_date.get_minute(), 0);
-    assert_eq!(new_date.get_second(), 33);
-}
-
-#[test]
-fn test_add_seconds_changes_minute() {
-    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
-
-    let new_date = date.add_seconds(70);
-
-    assert_eq!(new_date.get_year(), 2021);
-    assert_eq!(new_date.get_month(), 1);
-    assert_eq!(new_date.get_month_day(), 1);
-    assert_eq!(new_date.get_hour(), 0);
-    assert_eq!(new_date.get_minute(), 1);
-    assert_eq!(new_date.get_second(), 10);
-}
-
-#[test]
-fn test_add_seconds_changes_hour() {
-    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
-
-    let new_date = date.add_seconds(3601);
-
-    assert_eq!(new_date.get_year(), 2021);
-    assert_eq!(new_date.get_month(), 1);
-    assert_eq!(new_date.get_month_day(), 1);
-    assert_eq!(new_date.get_hour(), 1);
-    assert_eq!(new_date.get_minute(), 0);
-    assert_eq!(new_date.get_second(), 1);
-}
-
-#[test]
-fn test_add_seconds_changes_day() {
-    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
-
-    let new_date = date.add_seconds(86401);
-
-    assert_eq!(new_date.get_year(), 2021);
-    assert_eq!(new_date.get_month(), 1);
-    assert_eq!(new_date.get_month_day(), 2);
-    assert_eq!(new_date.get_hour(), 0);
-    assert_eq!(new_date.get_minute(), 0);
-    assert_eq!(new_date.get_second(), 1);
-}
-
-#[test]
-fn test_add_seconds_changes_month() {
-    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 0, minute: 0, second: 0);
-
-    let new_date = date.add_seconds(86401);
-
-    assert_eq!(new_date.get_year(), 2021);
-    assert_eq!(new_date.get_month(), 2);
-    assert_eq!(new_date.get_month_day(), 1);
-    assert_eq!(new_date.get_hour(), 0);
-    assert_eq!(new_date.get_minute(), 0);
-    assert_eq!(new_date.get_second(), 1);
-}
-
-#[test]
-fn test_add_seconds_changes_year() {
-    let date = create!(Date, year: 2021, month: 12, day: 31, hour: 0, minute: 0, second: 0);
-
-    let new_date = date.add_seconds(86401);
-
-    assert_eq!(new_date.get_year(), 2022);
-    assert_eq!(new_date.get_month(), 1);
-    assert_eq!(new_date.get_month_day(), 1);
-    assert_eq!(new_date.get_hour(), 0);
-    assert_eq!(new_date.get_minute(), 0);
-    assert_eq!(new_date.get_second(), 1);
-}
-
-#[test]
 fn test_advance_until_next_available_month() {
     let available = RecurrenceVec::new(vec![1, 2, 3]);
     let date = create!(Date, year: 2021, month: 2, day: 18);
@@ -1144,4 +1060,157 @@ fn test_advance_until_next_available_second_invalid_seconds() {
     assert_eq!(result.get_hour(), 13);
     assert_eq!(result.get_minute(), 14);
     assert_eq!(result.get_second(), 0);
+}
+
+#[test]
+fn test_add_seconds() {
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_seconds(33);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 1);
+    assert_eq!(new_date.get_hour(), 0);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 33);
+}
+
+#[test]
+fn test_add_seconds_changes_minute() {
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_seconds(70);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 1);
+    assert_eq!(new_date.get_hour(), 0);
+    assert_eq!(new_date.get_minute(), 1);
+    assert_eq!(new_date.get_second(), 10);
+}
+
+#[test]
+fn test_add_seconds_changes_hour() {
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_seconds(3601);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 1);
+    assert_eq!(new_date.get_hour(), 1);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 1);
+}
+
+#[test]
+fn test_add_seconds_changes_day() {
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_seconds(86401);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 2);
+    assert_eq!(new_date.get_hour(), 0);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 1);
+}
+
+#[test]
+fn test_add_seconds_changes_month() {
+    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_seconds(86401);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 2);
+    assert_eq!(new_date.get_month_day(), 1);
+    assert_eq!(new_date.get_hour(), 0);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 1);
+}
+
+#[test]
+fn test_add_seconds_changes_year() {
+    let date = create!(Date, year: 2021, month: 12, day: 31, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_seconds(86401);
+
+    assert_eq!(new_date.get_year(), 2022);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 1);
+    assert_eq!(new_date.get_hour(), 0);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 1);
+}
+
+#[test]
+fn test_seconds_to_date_same_date() {
+    let date = create!(Date, second: 15);
+
+    let seconds = date.seconds_to_date(&date);
+
+    assert_eq!(seconds, 0);
+}
+
+#[test]
+fn test_seconds_to_date_same_minute() {
+    let date1 = create!(Date, second: 0);
+    let date2 = create!(Date, second: 10);
+
+    let seconds = date1.seconds_to_date(&date2);
+
+    assert_eq!(seconds, 10);
+}
+
+#[test]
+fn test_seconds_to_date_same_hour() {
+    let date1 = create!(Date, minute: 0, second: 0);
+    let date2 = create!(Date, minute: 10, second: 10);
+
+    let seconds = date1.seconds_to_date(&date2);
+
+    assert_eq!(seconds, 610);
+}
+
+#[test]
+fn test_seconds_to_date_same_day() {
+    let date1 = create!(Date, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, hour: 10, minute: 10, second: 10);
+
+    let seconds = date1.seconds_to_date(&date2);
+
+    assert_eq!(seconds, 36610);
+}
+
+#[test]
+fn test_seconds_to_date_same_month() {
+    let date1 = create!(Date, day: 1, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, day: 10, hour: 10, minute: 10, second: 10);
+
+    let seconds = date1.seconds_to_date(&date2);
+
+    assert_eq!(seconds, 814210);
+}
+
+#[test]
+fn test_seconds_to_date_same_year() {
+    let date1 = create!(Date, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, month: 10, day: 10, hour: 10, minute: 10, second: 10);
+
+    let seconds = date1.seconds_to_date(&date2);
+
+    assert_eq!(seconds, 24401410);
+}
+
+#[test]
+fn test_seconds_to_date_different_year() {
+    let date1 = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, year: 2022, month: 1, day: 10, hour: 10, minute: 10, second: 10);
+
+    let seconds = date1.seconds_to_date(&date2);
+
+    assert_eq!(seconds, 32350210);
 }
