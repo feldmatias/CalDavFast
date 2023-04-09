@@ -92,10 +92,10 @@ impl Date {
         Some(Self::new(current_date))
     }
 
-    pub fn set_hour(&self, hour: u32) -> Option<Self> {
+    pub fn set_hour(&self, hour: u32, maintain_consistency: bool) -> Option<Self> {
         let mut current_date = self.date;
 
-        if hour <= current_date.hour() {
+        if maintain_consistency && hour <= current_date.hour() {
             current_date += chrono::Duration::days(1);
         }
 
@@ -108,10 +108,10 @@ impl Date {
         Some(Self::new(current_date))
     }
 
-    pub fn set_minute(&self, minute: u32) -> Option<Self> {
+    pub fn set_minute(&self, minute: u32, maintain_consistency: bool) -> Option<Self> {
         let mut current_date = self.date;
 
-        if minute <= current_date.minute() {
+        if maintain_consistency && minute <= current_date.minute() {
             current_date += chrono::Duration::hours(1);
         }
 
@@ -123,10 +123,10 @@ impl Date {
         Some(Self::new(current_date))
     }
 
-    pub fn set_second(&self, second: u32) -> Option<Self> {
+    pub fn set_second(&self, second: u32, maintain_consistency: bool) -> Option<Self> {
         let mut current_date = self.date;
 
-        if second <= current_date.second() {
+        if maintain_consistency && second <= current_date.second() {
             current_date += chrono::Duration::minutes(1);
         }
 
@@ -213,30 +213,30 @@ impl Date {
 
     pub fn advance_until_next_available_hour(&self, available: &RecurrenceVec<u32>) -> Self {
         let mut next_hour = available.get_next(&self.get_hour());
-        let mut new_date = self.set_hour(next_hour);
+        let mut new_date = self.set_hour(next_hour, true);
         while new_date.is_none() {
             next_hour = available.get_next(&next_hour);
-            new_date = self.set_hour(next_hour);
+            new_date = self.set_hour(next_hour, true);
         }
         new_date.unwrap()
     }
 
     pub fn advance_until_next_available_minute(&self, available: &RecurrenceVec<u32>) -> Self {
         let mut next_minute = available.get_next(&self.get_minute());
-        let mut new_date = self.set_minute(next_minute);
+        let mut new_date = self.set_minute(next_minute, true);
         while new_date.is_none() {
             next_minute = available.get_next(&next_minute);
-            new_date = self.set_minute(next_minute);
+            new_date = self.set_minute(next_minute, true);
         }
         new_date.unwrap()
     }
 
     pub fn advance_until_next_available_second(&self, available: &RecurrenceVec<u32>) -> Self {
         let mut next_second = available.get_next(&self.get_second());
-        let mut new_date = self.set_second(next_second);
+        let mut new_date = self.set_second(next_second, true);
         while new_date.is_none() {
             next_second = available.get_next(&next_second);
-            new_date = self.set_second(next_second);
+            new_date = self.set_second(next_second, true);
         }
         new_date.unwrap()
     }
@@ -246,11 +246,19 @@ impl Date {
     pub fn add_seconds(&self, seconds: u32) -> Self {
         Self::new(self.date + chrono::Duration::seconds(seconds as i64))
     }
+
+    pub fn add_minutes(&self, minutes: u32) -> Self {
+        Self::new(self.date + chrono::Duration::minutes(minutes as i64))
+    }
 }
 
 impl Date {
-    pub fn seconds_to_date(&self, other: &Self) -> i64 {
-        (other.date - self.date).num_seconds()
+    pub fn seconds_to_date(&self, other: &Self) -> u32 {
+        (other.date - self.date).num_seconds() as u32
+    }
+
+    pub fn minutes_to_date(&self, other: &Self) -> u32 {
+        (other.date - self.date).num_minutes() as u32
     }
 }
 

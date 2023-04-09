@@ -34,6 +34,14 @@ impl<T: PartialEq + Clone + Ord> RecurrenceVec<T> {
         self.data.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<T> {
+        self.data.iter()
+    }
+
     pub fn get_next(&self, item: &T) -> T {
         /*
         If item exists in data, return the next element. If it is the last one, return the first element.

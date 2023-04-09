@@ -152,12 +152,14 @@ impl Recurrence {
             Frequency::Secondly => {
                 self.calculate_ocurrences_secondly(start_date, ending_date, count)
             }
-            Frequency::Minutely => Vec::new(), // TODO
-            Frequency::Hourly => Vec::new(),   // TODO
-            Frequency::Daily => Vec::new(),    // TODO
-            Frequency::Weekly => Vec::new(),   // TODO
-            Frequency::Monthly => Vec::new(),  // TODO
-            Frequency::Yearly => Vec::new(),   // TODO
+            Frequency::Minutely => {
+                self.calculate_ocurrences_minutely(start_date, ending_date, count)
+            }
+            Frequency::Hourly => Vec::new(),  // TODO
+            Frequency::Daily => Vec::new(),   // TODO
+            Frequency::Weekly => Vec::new(),  // TODO
+            Frequency::Monthly => Vec::new(), // TODO
+            Frequency::Yearly => Vec::new(),  // TODO
         }
     }
 
@@ -217,9 +219,8 @@ impl Recurrence {
             }
 
             if let Some(date) = skip_to_date {
-                let seconds_to_add = self.calculate_interval_to_skip_ocurrence(
-                    current_date.seconds_to_date(&date) as u32,
-                );
+                let seconds_to_add =
+                    self.calculate_interval_to_skip_ocurrence(current_date.seconds_to_date(&date));
                 current_date = current_date.add_seconds(seconds_to_add);
                 continue;
             }
@@ -232,6 +233,111 @@ impl Recurrence {
             }
 
             current_date = current_date.add_seconds(self.interval);
+        }
+        ocurrences
+    }
+
+    fn calculate_ocurrences_minutely(
+        &self,
+        start_date: Date,
+        ending_date: Date,
+        count: u32,
+    ) -> Vec<Date> {
+        /* If freq is MINUTELY, we advance every `interval` minutes, but:
+                - Only in the months specified in `months`,
+                - Only in the days specified in `month_days` and `year_days` and `weekdays`,
+                - Only in the hours specified in `hours`,
+            Only accept dates if the minutes are specified in `seconds`,
+            If seconds is specified, expand dates to include all those seconds, else use start_date seconds
+            If set_pos is specified, within a minute only include those that match the positions in set_pos.
+        */
+        let mut ocurrences = Vec::new();
+        let mut count = count;
+        let mut current_date = start_date;
+
+        let months = self.months.get_or_default_months();
+        let year_days = self.year_days.get_or_default_year_days();
+        let month_days = self.month_days.get_or_default_month_days();
+        let weekdays = self.weekdays.get_or_default_weekdays();
+        let hours = self.hours.get_or_default_hours();
+        let minutes = self.minutes.get_or_default_minutes();
+        let seconds = self.seconds.get_or_default(vec![start_date.get_second()]);
+
+        loop {
+            if count == 0 {
+                break;
+            }
+            if current_date > ending_date {
+                break;
+            }
+
+            let mut skip_to_date: Option<Date> = None;
+            if !months.contains(&current_date.get_month()) {
+                // Skip to next month
+                skip_to_date = Some(current_date.advance_until_next_available_month(&months));
+            } else if !year_days.contains(&current_date.get_year_day()) {
+                // Skip to next year day
+                skip_to_date = Some(current_date.advance_until_next_available_year_day(&year_days));
+            } else if !month_days.contains(&current_date.get_month_day()) {
+                // Skip to next month day
+                skip_to_date =
+                    Some(current_date.advance_until_next_available_month_day(&month_days));
+            } else if !weekdays.contains(&current_date.get_weekday()) {
+                // Skip to next weekday
+                skip_to_date = Some(current_date.advance_until_next_available_weekday(&weekdays));
+            } else if !hours.contains(&current_date.get_hour()) {
+                // Skip to next hour
+                skip_to_date = Some(current_date.advance_until_next_available_hour(&hours));
+            }
+
+            if let Some(date) = skip_to_date {
+                let minutes_to_add =
+                    self.calculate_interval_to_skip_ocurrence(current_date.minutes_to_date(&date));
+                current_date = current_date.add_minutes(minutes_to_add);
+                continue;
+            }
+
+            if minutes.contains(&current_date.get_minute()) {
+                // Expand seconds
+                let mut minute_ocurrences = Vec::new();
+                for second in seconds.iter() {
+                    let ocurrence = current_date.set_second(*second, false);
+                    if let Some(minute_ocurrence) = ocurrence {
+                        minute_ocurrences.push(minute_ocurrence);
+                    }
+                }
+                let mut minute_ocurrences_filtered = Vec::new();
+                // TODO: refactor to set_pos struct and rename set_pos -> recurrence_positions
+                if self.set_pos.is_empty() {
+                    minute_ocurrences_filtered = minute_ocurrences;
+                } else {
+                    for position in self.set_pos.iter() {
+                        let index = if *position >= 0 {
+                            *position - 1
+                        } else {
+                            minute_ocurrences.len() as i32 + *position
+                        };
+                        let item = minute_ocurrences.get(index as usize);
+                        if let Some(item) = item {
+                            if !ocurrences.contains(item) {
+                                minute_ocurrences_filtered.push(*item);
+                            }
+                        }
+                    }
+                }
+
+                for ocurrence in minute_ocurrences_filtered.iter() {
+                    if !self.excluded_dates.contains(ocurrence)
+                        && count > 0
+                        && ocurrence < &ending_date
+                    {
+                        ocurrences.push(*ocurrence);
+                        count -= 1;
+                    }
+                }
+            }
+
+            current_date = current_date.add_minutes(self.interval);
         }
         ocurrences
     }
