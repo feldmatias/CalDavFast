@@ -329,7 +329,7 @@ impl Recurrence {
                 for ocurrence in minute_ocurrences_filtered.iter() {
                     if !self.excluded_dates.contains(ocurrence)
                         && count > 0
-                        && ocurrence < &ending_date
+                        && ocurrence <= &ending_date
                     {
                         ocurrences.push(*ocurrence);
                         count -= 1;
@@ -344,10 +344,15 @@ impl Recurrence {
 
     fn calculate_interval_to_skip_ocurrence(&self, time: u32) -> u32 {
         let modulo = time % self.interval;
-        if modulo == 0 {
-            return time;
-        }
-
-        time + self.interval - modulo
+        let result = if modulo == 0 {
+            time
+        } else {
+            time + self.interval - modulo
+        };
+        if result > 0 {
+            result
+        } else {
+            1
+        } // Rounding problems
     }
 }
