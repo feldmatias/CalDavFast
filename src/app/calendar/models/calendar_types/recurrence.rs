@@ -82,11 +82,15 @@ If multiple BYxxx rule parts are specified, then after evaluating
 
 pub mod date;
 pub mod recurrence_builder;
+pub mod recurrence_positions;
 pub mod recurrence_vec;
 pub mod weekday;
 use serde::{Deserialize, Serialize};
 
-use self::{date::Date, recurrence_vec::RecurrenceVec, weekday::Weekday};
+use self::{
+    date::Date, recurrence_positions::RecurrencePositions, recurrence_vec::RecurrenceVec,
+    weekday::Weekday,
+};
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub enum Frequency {
@@ -118,11 +122,11 @@ pub struct Recurrence {
 
     pub week_start: Option<Weekday>,
 
-    pub excluded_dates: Vec<Date>,
+    pub excluded_dates: Vec<Date>, // TODO: change to set?
 
     pub recurrences: Vec<RecurrenceDay>,
     pub weekdays: RecurrenceVec<Weekday>,
-    pub set_pos: RecurrenceVec<i32>,
+    pub positions: RecurrencePositions,
 
     pub hours: RecurrenceVec<u32>,
     pub minutes: RecurrenceVec<u32>,
@@ -255,6 +259,7 @@ impl Recurrence {
         let mut count = count;
         let mut current_date = start_date;
 
+        let use_positions = !self.seconds.is_empty();
         let months = self.months.get_or_default_months();
         let year_days = self.year_days.get_or_default_year_days();
         let month_days = self.month_days.get_or_default_month_days();
@@ -306,30 +311,18 @@ impl Recurrence {
                         minute_ocurrences.push(minute_ocurrence);
                     }
                 }
-                let mut minute_ocurrences_filtered = Vec::new();
-                // TODO: refactor to set_pos struct and rename set_pos -> recurrence_positions
-                if self.set_pos.is_empty() {
-                    minute_ocurrences_filtered = minute_ocurrences;
+
+                let minute_ocurrences_filtered = if use_positions {
+                    self.positions.apply(minute_ocurrences)
                 } else {
-                    for position in self.set_pos.iter() {
-                        let index = if *position >= 0 {
-                            *position - 1
-                        } else {
-                            minute_ocurrences.len() as i32 + *position
-                        };
-                        let item = minute_ocurrences.get(index as usize);
-                        if let Some(item) = item {
-                            if !ocurrences.contains(item) {
-                                minute_ocurrences_filtered.push(*item);
-                            }
-                        }
-                    }
-                }
+                    minute_ocurrences
+                };
 
                 for ocurrence in minute_ocurrences_filtered.iter() {
                     if !self.excluded_dates.contains(ocurrence)
                         && count > 0
                         && ocurrence <= &ending_date
+                        && ocurrence >= &start_date
                     {
                         ocurrences.push(*ocurrence);
                         count -= 1;
@@ -349,6 +342,7 @@ impl Recurrence {
         } else {
             time + self.interval - modulo
         };
+
         if result > 0 {
             result
         } else {

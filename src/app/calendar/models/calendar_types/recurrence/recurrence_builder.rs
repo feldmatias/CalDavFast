@@ -1,6 +1,6 @@
 use super::{
-    date::Date, recurrence_vec::RecurrenceVec, weekday::Weekday, Frequency, Recurrence,
-    RecurrenceDay,
+    date::Date, recurrence_positions::RecurrencePositions, recurrence_vec::RecurrenceVec,
+    weekday::Weekday, Frequency, Recurrence, RecurrenceDay,
 };
 
 pub struct RecurrenceBuilder {
@@ -18,7 +18,7 @@ pub struct RecurrenceBuilder {
 
     recurrences: Option<Vec<RecurrenceDay>>,
     weekdays: Option<Vec<Weekday>>,
-    set_pos: Option<Vec<i32>>,
+    positions: Option<Vec<i32>>,
 
     hours: Option<Vec<u32>>,
     minutes: Option<Vec<u32>>,
@@ -39,7 +39,7 @@ impl RecurrenceBuilder {
             excluded_dates: None,
             recurrences: None,
             weekdays: None,
-            set_pos: None,
+            positions: None,
             hours: None,
             minutes: None,
             seconds: None,
@@ -84,8 +84,8 @@ impl RecurrenceBuilder {
         self
     }
 
-    pub fn set_set_pos(&mut self, set_pos: Vec<i32>) -> &mut Self {
-        self.set_pos = Some(set_pos);
+    pub fn set_positions(&mut self, positions: Vec<i32>) -> &mut Self {
+        self.positions = Some(positions);
         self
     }
 
@@ -128,7 +128,7 @@ impl RecurrenceBuilder {
             week_start: self.week_start,
             excluded_dates: self.excluded_dates.clone().unwrap_or_default(),
             recurrences: self.recurrences.clone().unwrap_or_default(),
-            set_pos: RecurrenceVec::new(self.set_pos.clone().unwrap_or_default()),
+            positions: RecurrencePositions::new(self.positions.clone().unwrap_or_default()),
             weekdays: RecurrenceVec::new(self.weekdays.clone().unwrap_or_default()),
             hours: RecurrenceVec::new(self.hours.clone().unwrap_or_default()),
             minutes: RecurrenceVec::new(self.minutes.clone().unwrap_or_default()),

@@ -64,3 +64,5 @@ Overall, MongoDB is a powerful and flexible database that is well-suited for the
 - Run `cargo fmt` to format the code.
 - Run `cargo clippy` to check for linting errors.
 - Run `cargo doc --open` to generate the documentation.
+
+- To count the tests (for curiosity): `cargo test | grep "... ok" | wc -l`
