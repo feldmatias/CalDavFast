@@ -145,12 +145,8 @@ impl Recurrence {
         let count = self.count.unwrap_or(1000);
 
         match self.frequency {
-            Frequency::Secondly => {
-                self.calculate_ocurrences_secondly(start_date, ending_date, count)
-            }
-            Frequency::Minutely => {
-                self.calculate_ocurrences_minutely(start_date, ending_date, count)
-            }
+            Frequency::Secondly => self.calculate_ocurrences_secondly(start_date, ending_date, count),
+            Frequency::Minutely => self.calculate_ocurrences_minutely(start_date, ending_date, count),
             Frequency::Hourly => Vec::new(),  // TODO
             Frequency::Daily => Vec::new(),   // TODO
             Frequency::Weekly => Vec::new(),  // TODO

@@ -9,9 +9,7 @@ async fn hello(provider: web::Data<DDIProvider>, request: Xml<XMLRequest>) -> im
 
 pub async fn start_server() -> Result<(), std::io::Error> {
     let app_config = AppConfig::new();
-    let client = mongodb::Client::with_uri_str(&app_config.mongodb)
-        .await
-        .unwrap();
+    let client = mongodb::Client::with_uri_str(&app_config.mongodb).await.unwrap();
     let di_provider = di_container(&client, app_config.mongo_database).await;
 
     HttpServer::new(move || {

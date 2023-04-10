@@ -65,14 +65,8 @@ fn test_secondly_interval1_change_hour() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 4);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, hour: 12, minute: 59, second: 58)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, hour: 12, minute: 59, second: 59)
-    );
+    assert_eq!(ocurrences[0], create!(Date, hour: 12, minute: 59, second: 58));
+    assert_eq!(ocurrences[1], create!(Date, hour: 12, minute: 59, second: 59));
     assert_eq!(ocurrences[2], create!(Date, hour: 13, minute: 0, second: 0));
     assert_eq!(ocurrences[3], create!(Date, hour: 13, minute: 0, second: 1));
 }
@@ -93,26 +87,11 @@ fn test_secondly_interval1_change_day() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 5);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, day: 4, hour: 23, minute: 59, second: 58)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, day: 4, hour: 23, minute: 59, second: 59)
-    );
-    assert_eq!(
-        ocurrences[2],
-        create!(Date, day: 5, hour: 0, minute: 0, second: 0)
-    );
-    assert_eq!(
-        ocurrences[3],
-        create!(Date, day: 5, hour: 0, minute: 0, second: 1)
-    );
-    assert_eq!(
-        ocurrences[4],
-        create!(Date, day: 5, hour: 0, minute: 0, second: 2)
-    );
+    assert_eq!(ocurrences[0], create!(Date, day: 4, hour: 23, minute: 59, second: 58));
+    assert_eq!(ocurrences[1], create!(Date, day: 4, hour: 23, minute: 59, second: 59));
+    assert_eq!(ocurrences[2], create!(Date, day: 5, hour: 0, minute: 0, second: 0));
+    assert_eq!(ocurrences[3], create!(Date, day: 5, hour: 0, minute: 0, second: 1));
+    assert_eq!(ocurrences[4], create!(Date, day: 5, hour: 0, minute: 0, second: 2));
 }
 
 #[test]
@@ -158,8 +137,7 @@ fn test_secondly_interval1_change_year() {
     /*
     Starts at 31st of December 2021 at 23:59:59 and ends at 1st of January 2022 at 00:01:02.
     */
-    let start_date =
-        create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59, second: 59);
+    let start_date = create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59, second: 59);
     let end_date = create!(Date, year: 2022, month: 1, day: 1, hour: 0, minute: 0, second: 2);
 
     let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
@@ -277,14 +255,8 @@ fn test_secondly_allowed_hours() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 4);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, hour: 0, minute: 59, second: 58)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, hour: 0, minute: 59, second: 59)
-    );
+    assert_eq!(ocurrences[0], create!(Date, hour: 0, minute: 59, second: 58));
+    assert_eq!(ocurrences[1], create!(Date, hour: 0, minute: 59, second: 59));
     assert_eq!(ocurrences[2], create!(Date, hour: 4, minute: 0, second: 0));
     assert_eq!(ocurrences[3], create!(Date, hour: 4, minute: 0, second: 1));
 }
@@ -366,14 +338,8 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 2);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, day: 6, hour: 1, minute: 3, second: 5)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, day: 6, hour: 1, minute: 3, second: 46)
-    );
+    assert_eq!(ocurrences[0], create!(Date, day: 6, hour: 1, minute: 3, second: 5));
+    assert_eq!(ocurrences[1], create!(Date, day: 6, hour: 1, minute: 3, second: 46));
 }
 
 #[test]
@@ -511,9 +477,7 @@ fn test_secondly_interval5_allowed_seconds() {
     let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
         .set_interval(5)
         .set_until_date(end_date.clone())
-        .set_seconds(vec![
-            0, 5, 6, 7, 8, 9, 11, 18, 19, 20, 25, 32, 37, 38, 39, 55,
-        ])
+        .set_seconds(vec![0, 5, 6, 7, 8, 9, 11, 18, 19, 20, 25, 32, 37, 38, 39, 55])
         .build();
 
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);

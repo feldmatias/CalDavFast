@@ -18,11 +18,7 @@ impl<T: PartialEq + Clone + Ord> RecurrenceVec<T> {
 
     pub fn get_or_default(&self, items: Vec<T>) -> RecurrenceVec<T> {
         RecurrenceVec {
-            data: if self.data.is_empty() {
-                items
-            } else {
-                self.data.clone()
-            },
+            data: if self.data.is_empty() { items } else { self.data.clone() },
         }
     }
 

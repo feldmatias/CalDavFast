@@ -38,8 +38,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use super::calendar_types::{
-    attendee::Attendee, event_classification::EventClassification, event_status::EventStatus,
-    geolocation::GeoLocation,
+    attendee::Attendee, event_classification::EventClassification, event_status::EventStatus, geolocation::GeoLocation,
 };
 
 #[derive(Debug, Serialize, Deserialize)]

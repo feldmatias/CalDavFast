@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
 use super::{
-    date::Date, recurrence_positions::RecurrencePositions, recurrence_vec::RecurrenceVec,
-    weekday::Weekday, Frequency, Recurrence, RecurrenceDay,
+    date::Date, recurrence_positions::RecurrencePositions, recurrence_vec::RecurrenceVec, weekday::Weekday, Frequency,
+    Recurrence, RecurrenceDay,
 };
 
 pub struct RecurrenceBuilder {

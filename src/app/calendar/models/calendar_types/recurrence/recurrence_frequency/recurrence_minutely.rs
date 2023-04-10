@@ -1,12 +1,7 @@
 use crate::app::calendar::models::calendar_types::recurrence::{date::Date, Recurrence};
 
 impl Recurrence {
-    pub fn calculate_ocurrences_minutely(
-        &self,
-        start_date: Date,
-        ending_date: Date,
-        count: u32,
-    ) -> Vec<Date> {
+    pub fn calculate_ocurrences_minutely(&self, start_date: Date, ending_date: Date, count: u32) -> Vec<Date> {
         /* If freq is MINUTELY, we advance every `interval` minutes, but:
                 - Only in the months specified in `months`,
                 - Only in the days specified in `month_days` and `year_days` and `weekdays`,
@@ -45,8 +40,7 @@ impl Recurrence {
                 skip_to_date = Some(current_date.advance_until_next_available_year_day(&year_days));
             } else if !month_days.contains(&current_date.get_month_day()) {
                 // Skip to next month day
-                skip_to_date =
-                    Some(current_date.advance_until_next_available_month_day(&month_days));
+                skip_to_date = Some(current_date.advance_until_next_available_month_day(&month_days));
             } else if !weekdays.contains(&current_date.get_weekday()) {
                 // Skip to next weekday
                 skip_to_date = Some(current_date.advance_until_next_available_weekday(&weekdays));
@@ -56,8 +50,7 @@ impl Recurrence {
             }
 
             if let Some(date) = skip_to_date {
-                let minutes_to_add =
-                    self.calculate_interval_to_skip_ocurrence(current_date.minutes_to_date(&date));
+                let minutes_to_add = self.calculate_interval_to_skip_ocurrence(current_date.minutes_to_date(&date));
                 current_date = current_date.add_minutes(minutes_to_add);
                 continue;
             }

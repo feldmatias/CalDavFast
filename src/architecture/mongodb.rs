@@ -14,8 +14,6 @@ impl MongoDb {
 
 impl Clone for MongoDb {
     fn clone(&self) -> Self {
-        Self {
-            db: self.db.clone(),
-        }
+        Self { db: self.db.clone() }
     }
 }

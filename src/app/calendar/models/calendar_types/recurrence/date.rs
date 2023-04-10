@@ -115,10 +115,7 @@ impl Date {
             current_date += chrono::Duration::hours(1);
         }
 
-        current_date = current_date
-            .with_minute(minute)?
-            .with_second(0)?
-            .with_nanosecond(0)?;
+        current_date = current_date.with_minute(minute)?.with_second(0)?.with_nanosecond(0)?;
 
         Some(Self::new(current_date))
     }

@@ -43,14 +43,8 @@ fn test_minutely_interval1_change_hour() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 3);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, hour: 0, minute: 58, second: 58)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, hour: 0, minute: 59, second: 58)
-    );
+    assert_eq!(ocurrences[0], create!(Date, hour: 0, minute: 58, second: 58));
+    assert_eq!(ocurrences[1], create!(Date, hour: 0, minute: 59, second: 58));
     assert_eq!(ocurrences[2], create!(Date, hour: 1, minute: 0, second: 58));
 }
 
@@ -70,22 +64,10 @@ fn test_minutely_interval1_change_day() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 4);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, day: 4, hour: 23, minute: 58, second: 37)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, day: 4, hour: 23, minute: 59, second: 37)
-    );
-    assert_eq!(
-        ocurrences[2],
-        create!(Date, day: 5, hour: 0, minute: 0, second: 37)
-    );
-    assert_eq!(
-        ocurrences[3],
-        create!(Date, day: 5, hour: 0, minute: 1, second: 37)
-    );
+    assert_eq!(ocurrences[0], create!(Date, day: 4, hour: 23, minute: 58, second: 37));
+    assert_eq!(ocurrences[1], create!(Date, day: 4, hour: 23, minute: 59, second: 37));
+    assert_eq!(ocurrences[2], create!(Date, day: 5, hour: 0, minute: 0, second: 37));
+    assert_eq!(ocurrences[3], create!(Date, day: 5, hour: 0, minute: 1, second: 37));
 }
 
 #[test]
@@ -127,8 +109,7 @@ fn test_minutely_interval1_change_year() {
     /*
     Starts at 31st of December 2021 at 23:59:46 and ends at 1st of January 2022 at 00:04:02.
     */
-    let start_date =
-        create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59, second: 46);
+    let start_date = create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59, second: 46);
     let end_date = create!(Date, year: 2022, month: 1, day: 1, hour: 0, minute: 4, second: 2);
 
     let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
@@ -254,15 +235,9 @@ fn test_minutely_allowed_hours() {
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, hour: 0, minute: 2, second: 58));
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, hour: 0, minute: 43, second: 58)
-    );
+    assert_eq!(ocurrences[1], create!(Date, hour: 0, minute: 43, second: 58));
     assert_eq!(ocurrences[2], create!(Date, hour: 4, minute: 2, second: 58));
-    assert_eq!(
-        ocurrences[3],
-        create!(Date, hour: 4, minute: 43, second: 58)
-    );
+    assert_eq!(ocurrences[3], create!(Date, hour: 4, minute: 43, second: 58));
 }
 
 #[test]
@@ -342,14 +317,8 @@ fn test_minutely_allowed_seconds_and_minutes_and_hours_and_month_days() {
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
 
     assert_eq!(ocurrences.len(), 2);
-    assert_eq!(
-        ocurrences[0],
-        create!(Date, day: 6, hour: 1, minute: 3, second: 5)
-    );
-    assert_eq!(
-        ocurrences[1],
-        create!(Date, day: 6, hour: 1, minute: 3, second: 46)
-    );
+    assert_eq!(ocurrences[0], create!(Date, day: 6, hour: 1, minute: 3, second: 5));
+    assert_eq!(ocurrences[1], create!(Date, day: 6, hour: 1, minute: 3, second: 46));
 }
 
 #[test]
@@ -444,9 +413,7 @@ fn test_minutely_interval5_allowed_minutes() {
     let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
         .set_interval(5)
         .set_until_date(end_date.clone())
-        .set_minutes(vec![
-            0, 5, 6, 7, 8, 9, 11, 18, 19, 20, 25, 32, 37, 38, 39, 55,
-        ])
+        .set_minutes(vec![0, 5, 6, 7, 8, 9, 11, 18, 19, 20, 25, 32, 37, 38, 39, 55])
         .build();
 
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
@@ -730,18 +697,9 @@ fn test_rfc_every_20_minutes_from_9_to_4_40_every_day() {
     let mut i = 0;
     for hour in 9..17 {
         for minute in vec![0, 20, 40] {
-            assert_eq!(
-                ocurrences[i],
-                create!(Date, day: 5, hour: hour, minute: minute)
-            );
-            assert_eq!(
-                ocurrences[i + 24],
-                create!(Date, day: 6, hour: hour, minute: minute)
-            );
-            assert_eq!(
-                ocurrences[i + 48],
-                create!(Date, day: 7, hour: hour, minute: minute)
-            );
+            assert_eq!(ocurrences[i], create!(Date, day: 5, hour: hour, minute: minute));
+            assert_eq!(ocurrences[i + 24], create!(Date, day: 6, hour: hour, minute: minute));
+            assert_eq!(ocurrences[i + 48], create!(Date, day: 7, hour: hour, minute: minute));
             i += 1;
         }
     }
