@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use super::{
     date::Date, recurrence_positions::RecurrencePositions, recurrence_vec::RecurrenceVec,
     weekday::Weekday, Frequency, Recurrence, RecurrenceDay,
@@ -14,7 +16,7 @@ pub struct RecurrenceBuilder {
 
     week_start: Option<Weekday>,
 
-    excluded_dates: Option<Vec<Date>>,
+    excluded_dates: Option<HashSet<Date>>,
 
     recurrences: Option<Vec<RecurrenceDay>>,
     weekdays: Option<Vec<Weekday>>,
@@ -69,7 +71,7 @@ impl RecurrenceBuilder {
         self
     }
 
-    pub fn set_excluded_dates(&mut self, excluded_dates: Vec<Date>) -> &mut Self {
+    pub fn set_excluded_dates(&mut self, excluded_dates: HashSet<Date>) -> &mut Self {
         self.excluded_dates = Some(excluded_dates);
         self
     }

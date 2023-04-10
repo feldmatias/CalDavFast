@@ -85,6 +85,8 @@ pub mod recurrence_builder;
 pub mod recurrence_positions;
 pub mod recurrence_vec;
 pub mod weekday;
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 
 use self::{
@@ -122,7 +124,7 @@ pub struct Recurrence {
 
     pub week_start: Option<Weekday>,
 
-    pub excluded_dates: Vec<Date>, // TODO: change to set?
+    pub excluded_dates: HashSet<Date>,
 
     pub recurrences: Vec<RecurrenceDay>,
     pub weekdays: RecurrenceVec<Weekday>,

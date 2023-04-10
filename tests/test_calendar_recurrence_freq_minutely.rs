@@ -542,13 +542,17 @@ fn test_minutely_exluded_dates() {
 
     let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
         .set_until_date(end_date.clone())
-        .set_excluded_dates(vec![
-            create!(Date, minute: 1),
-            create!(Date, minute: 5),
-            create!(Date, minute: 8),
-            create!(Date, minute: 9),
-            create!(Date, minute: 10),
-        ])
+        .set_excluded_dates(
+            vec![
+                create!(Date, minute: 1),
+                create!(Date, minute: 5),
+                create!(Date, minute: 8),
+                create!(Date, minute: 9),
+                create!(Date, minute: 10),
+            ]
+            .into_iter()
+            .collect(),
+        )
         .build();
 
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
@@ -576,14 +580,18 @@ fn test_minutely_interval2_allowed_minutes_and_exluded_dates() {
         .set_interval(2)
         .set_until_date(end_date.clone())
         .set_minutes(vec![0, 1, 2, 3, 4, 12, 13, 15, 16])
-        .set_excluded_dates(vec![
-            create!(Date, minute: 1),
-            create!(Date, minute: 5),
-            create!(Date, minute: 8),
-            create!(Date, minute: 9),
-            create!(Date, minute: 10),
-            create!(Date, minute: 12),
-        ])
+        .set_excluded_dates(
+            vec![
+                create!(Date, minute: 1),
+                create!(Date, minute: 5),
+                create!(Date, minute: 8),
+                create!(Date, minute: 9),
+                create!(Date, minute: 10),
+                create!(Date, minute: 12),
+            ]
+            .into_iter()
+            .collect(),
+        )
         .build();
 
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);

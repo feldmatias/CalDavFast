@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{recurrence_vec::RecurrenceVec, weekday::Weekday};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 #[serde(transparent)]
 pub struct Date {
     #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
@@ -273,23 +273,3 @@ impl std::cmp::PartialOrd<DateTime<Utc>> for Date {
         self.date.partial_cmp(other)
     }
 }
-
-impl std::cmp::PartialEq<Date> for Date {
-    fn eq(&self, other: &Date) -> bool {
-        self.date == other.date
-    }
-}
-
-impl std::cmp::PartialOrd<Date> for Date {
-    fn partial_cmp(&self, other: &Date) -> Option<std::cmp::Ordering> {
-        self.date.partial_cmp(&other.date)
-    }
-}
-
-impl Clone for Date {
-    fn clone(&self) -> Self {
-        Self::new(self.date)
-    }
-}
-
-impl Copy for Date {}

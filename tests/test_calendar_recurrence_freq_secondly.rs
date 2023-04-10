@@ -611,13 +611,17 @@ fn test_secondly_exluded_dates() {
 
     let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
         .set_until_date(end_date.clone())
-        .set_excluded_dates(vec![
-            create!(Date, second: 1),
-            create!(Date, second: 5),
-            create!(Date, second: 8),
-            create!(Date, second: 9),
-            create!(Date, second: 10),
-        ])
+        .set_excluded_dates(
+            vec![
+                create!(Date, second: 1),
+                create!(Date, second: 5),
+                create!(Date, second: 8),
+                create!(Date, second: 9),
+                create!(Date, second: 10),
+            ]
+            .into_iter()
+            .collect(),
+        )
         .build();
 
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
@@ -645,14 +649,18 @@ fn test_secondly_interval2_allowed_seconds_and_exluded_dates() {
         .set_interval(2)
         .set_until_date(end_date.clone())
         .set_seconds(vec![0, 1, 2, 3, 4, 12, 13, 15, 16])
-        .set_excluded_dates(vec![
-            create!(Date, second: 1),
-            create!(Date, second: 5),
-            create!(Date, second: 8),
-            create!(Date, second: 9),
-            create!(Date, second: 10),
-            create!(Date, second: 12),
-        ])
+        .set_excluded_dates(
+            vec![
+                create!(Date, second: 1),
+                create!(Date, second: 5),
+                create!(Date, second: 8),
+                create!(Date, second: 9),
+                create!(Date, second: 10),
+                create!(Date, second: 12),
+            ]
+            .into_iter()
+            .collect(),
+        )
         .build();
 
     let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
