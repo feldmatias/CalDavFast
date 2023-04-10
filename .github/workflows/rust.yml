@@ -35,15 +35,15 @@ jobs:
     - name: Linter
       run: cargo clippy
 
+    - name: Build
+      run: cargo build
+
     - uses: isbang/compose-action@v1.4.1
       with:
         compose-file: "./docker-compose.yml"
         down-flags: "--volumes"
         services: |
           mongodb
-
-    - name: Build
-      run: cargo build
       
     - name: Run tests
       run: cargo test
