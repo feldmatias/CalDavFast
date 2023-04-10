@@ -1,5 +1,5 @@
 use cal_dav_fast::app::calendar::models::calendar_types::recurrence::{
-    recurrence_builder::RecurrenceBuilder, weekday::Weekday, Frequency,
+    recurrence_builder::RecurrenceBuilder, recurrence_frequency::Frequency, weekday::Weekday,
 };
 use pretty_assertions::assert_eq;
 
