@@ -41,9 +41,9 @@ jobs:
         down-flags: "--volumes"
         services: |
           mongodb
-      
-    - name: Run tests
-      run: cargo test
 
     - name: Build
       run: cargo build
+      
+    - name: Run tests
+      run: cargo test
