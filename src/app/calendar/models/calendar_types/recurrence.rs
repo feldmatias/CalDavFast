@@ -160,6 +160,7 @@ impl Recurrence {
     }
 
     fn calculate_interval_to_skip_ocurrence(&self, time: u32) -> u32 {
+        /* Return time if it is multiple of interval, or the next multiple */
         let modulo = time % self.interval;
         let result = if modulo == 0 {
             time
