@@ -1,70 +1,88 @@
-use crate::app::calendar::models::calendar_types::recurrence::{date::Date, Recurrence};
+use crate::app::calendar::models::calendar_types::recurrence::{
+    date::Date, recurrence_vec::RecurrenceVec, weekday::Weekday, Recurrence,
+};
 
-impl Recurrence {
-    pub fn calculate_ocurrences_secondly(&self, start_date: Date, ending_date: Date, count: u32) -> Vec<Date> {
-        /* When freq is SECONDLY, we advance every `interval` seconds, but:
+use super::recurrence_calculator::RecurrenceFrequencyCalculator;
+
+pub struct SecondlyRecurrenceCalculator {
+    months: RecurrenceVec<u32>,
+    year_days: RecurrenceVec<u32>,
+    month_days: RecurrenceVec<u32>,
+    weekdays: RecurrenceVec<Weekday>,
+    hours: RecurrenceVec<u32>,
+    minutes: RecurrenceVec<u32>,
+    seconds: RecurrenceVec<u32>,
+}
+
+impl SecondlyRecurrenceCalculator {
+    pub fn new(recurrence: &Recurrence, _start_date: Date) -> Self {
+        let months = recurrence.months.get_or_default_months();
+        let year_days = recurrence.year_days.get_or_default_year_days();
+        let month_days = recurrence.month_days.get_or_default_month_days();
+        let weekdays = recurrence.weekdays.get_or_default_weekdays();
+        let hours = recurrence.hours.get_or_default_hours();
+        let minutes = recurrence.minutes.get_or_default_minutes();
+        let seconds = recurrence.seconds.get_or_default_seconds();
+
+        Self {
+            months,
+            year_days,
+            month_days,
+            weekdays,
+            hours,
+            minutes,
+            seconds,
+        }
+    }
+}
+
+impl RecurrenceFrequencyCalculator for SecondlyRecurrenceCalculator {
+    /* When freq is SECONDLY, we advance every `interval` seconds, but:
                 - Only in the months specified in `months`,
                 - Only in the days specified in `month_days` and `year_days` and `weekdays`,
                 - Only in the hours specified in `hours`,
                 - Only in the minutes specified in `minutes`,
             Only accept dates if the seconds are specified in `seconds`,
-        */
-        let mut ocurrences = Vec::new();
-        let mut count = count;
-        let mut current_date = start_date;
+    */
+    fn use_positions(&self, _recurrence: &Recurrence) -> bool {
+        false
+    }
 
-        let months = self.months.get_or_default_months();
-        let year_days = self.year_days.get_or_default_year_days();
-        let month_days = self.month_days.get_or_default_month_days();
-        let weekdays = self.weekdays.get_or_default_weekdays();
-        let hours = self.hours.get_or_default_hours();
-        let minutes = self.minutes.get_or_default_minutes();
-        let seconds = self.seconds.get_or_default_seconds();
-
-        loop {
-            if count == 0 {
-                break;
-            }
-            if current_date > ending_date {
-                break;
-            }
-
-            let mut skip_to_date: Option<Date> = None;
-            if !months.contains(&current_date.get_month()) {
-                // Skip to next month
-                skip_to_date = Some(current_date.advance_until_next_available_month(&months));
-            } else if !year_days.contains(&current_date.get_year_day()) {
-                // Skip to next year day
-                skip_to_date = Some(current_date.advance_until_next_available_year_day(&year_days));
-            } else if !month_days.contains(&current_date.get_month_day()) {
-                // Skip to next month day
-                skip_to_date = Some(current_date.advance_until_next_available_month_day(&month_days));
-            } else if !weekdays.contains(&current_date.get_weekday()) {
-                // Skip to next weekday
-                skip_to_date = Some(current_date.advance_until_next_available_weekday(&weekdays));
-            } else if !hours.contains(&current_date.get_hour()) {
-                // Skip to next hour
-                skip_to_date = Some(current_date.advance_until_next_available_hour(&hours));
-            } else if !minutes.contains(&current_date.get_minute()) {
-                // Skip to next minute
-                skip_to_date = Some(current_date.advance_until_next_available_minute(&minutes));
-            }
-
-            if let Some(date) = skip_to_date {
-                let seconds_to_add = self.calculate_interval_to_skip_ocurrence(current_date.seconds_to_date(&date));
-                current_date = current_date.add_seconds(seconds_to_add);
-                continue;
-            }
-
-            if seconds.contains(&current_date.get_second()) {
-                count -= 1;
-                if !self.excluded_dates.contains(&current_date) {
-                    ocurrences.push(current_date);
-                }
-            }
-
-            current_date = current_date.add_seconds(self.interval);
+    fn get_skip_time(&self, current_date: Date, interval: u32) -> Option<u32> {
+        let mut skip_to_date: Option<Date> = None;
+        if !self.months.contains(&current_date.get_month()) {
+            // Skip to next month
+            skip_to_date = Some(current_date.advance_until_next_available_month(&self.months));
+        } else if !self.year_days.contains(&current_date.get_year_day()) {
+            // Skip to next year day
+            skip_to_date = Some(current_date.advance_until_next_available_year_day(&self.year_days));
+        } else if !self.month_days.contains(&current_date.get_month_day()) {
+            // Skip to next month day
+            skip_to_date = Some(current_date.advance_until_next_available_month_day(&self.month_days));
+        } else if !self.weekdays.contains(&current_date.get_weekday()) {
+            // Skip to next weekday
+            skip_to_date = Some(current_date.advance_until_next_available_weekday(&self.weekdays));
+        } else if !self.hours.contains(&current_date.get_hour()) {
+            // Skip to next hour
+            skip_to_date = Some(current_date.advance_until_next_available_hour(&self.hours));
+        } else if !self.minutes.contains(&current_date.get_minute()) {
+            // Skip to next minute
+            skip_to_date = Some(current_date.advance_until_next_available_minute(&self.minutes));
         }
-        ocurrences
+
+        skip_to_date
+            .map(|date| self.calculate_interval_to_skip_ocurrence(current_date.seconds_to_date(&date), interval))
+    }
+
+    fn add_time(&self, current_date: Date, time: u32) -> Date {
+        current_date.add_seconds(time)
+    }
+
+    fn check_date(&self, current_date: Date) -> bool {
+        self.seconds.contains(&current_date.get_second())
+    }
+
+    fn expand_date(&self, current_date: Date) -> Vec<Date> {
+        vec![current_date]
     }
 }
