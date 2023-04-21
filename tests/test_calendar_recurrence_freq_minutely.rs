@@ -614,98 +614,6 @@ fn test_minutely_expand_seconds_before_start_date_with_set_pos() {
 }
 
 #[test]
-fn test_rfc_every_15_minutes_6_ocurrences() {
-    /*
-    Every 15 minutes for 6 occurrences:
-
-       DTSTART;TZID=America/New_York:19970902T090000
-       RRULE:FREQ=MINUTELY;INTERVAL=15;COUNT=6
-
-       ==> (September 2, 1997 EDT) 09:00,09:15,09:30,09:45,10:00,10:15
-    */
-    let start_date = create!(Date, hour: 9, minute: 0);
-
-    let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
-        .set_interval(15)
-        .set_count(6)
-        .build();
-
-    let ocurrences = recurrence.calculate_ocurrences(start_date, start_date.set_month(12).unwrap());
-
-    assert_eq!(ocurrences.len(), 6);
-    assert_eq!(ocurrences[0], create!(Date, hour: 9, minute: 0));
-    assert_eq!(ocurrences[1], create!(Date, hour: 9, minute: 15));
-    assert_eq!(ocurrences[2], create!(Date, hour: 9, minute: 30));
-    assert_eq!(ocurrences[3], create!(Date, hour: 9, minute: 45));
-    assert_eq!(ocurrences[4], create!(Date, hour: 10, minute: 0));
-    assert_eq!(ocurrences[5], create!(Date, hour: 10, minute: 15));
-}
-
-#[test]
-fn test_rfc_every_hour_and_a_half_for_4_ocurrences() {
-    /*
-    Every hour and a half for 4 occurrences:
-
-       DTSTART;TZID=America/New_York:19970902T090000
-       RRULE:FREQ=MINUTELY;INTERVAL=90;COUNT=4
-
-       ==> (September 2, 1997 EDT) 09:00,10:30,12:00,13:30
-    */
-    let start_date = create!(Date, hour: 9, minute: 0);
-
-    let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
-        .set_interval(90)
-        .set_count(4)
-        .build();
-
-    let ocurrences = recurrence.calculate_ocurrences(start_date, start_date.set_month(12).unwrap());
-
-    assert_eq!(ocurrences.len(), 4);
-    assert_eq!(ocurrences[0], create!(Date, hour: 9, minute: 0));
-    assert_eq!(ocurrences[1], create!(Date, hour: 10, minute: 30));
-    assert_eq!(ocurrences[2], create!(Date, hour: 12, minute: 0));
-    assert_eq!(ocurrences[3], create!(Date, hour: 13, minute: 30));
-}
-
-#[test]
-fn test_rfc_every_20_minutes_from_9_to_4_40_every_day() {
-    /*
-    Every 20 minutes from 9:00 AM to 4:40 PM every day:
-
-       DTSTART;TZID=America/New_York:19970902T090000
-       RRULE:FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16
-
-       ==> (September 2, 1997 EDT) 9:00,9:20,9:40,10:00,10:20,
-                                   ... 16:00,16:20,16:40
-           (September 3, 1997 EDT) 9:00,9:20,9:40,10:00,10:20,
-                                   ...16:00,16:20,16:40
-           ...
-
-    Limit to 3 days to avoid a long test
-    */
-    let start_date = create!(Date, day: 5, hour: 9, minute: 0);
-
-    let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
-        .set_interval(20)
-        .set_hours(vec![9, 10, 11, 12, 13, 14, 15, 16])
-        .set_count(24 * 3)
-        .build();
-
-    let ocurrences = recurrence.calculate_ocurrences(start_date, start_date.set_month(12).unwrap());
-
-    assert_eq!(ocurrences.len(), 24 * 3);
-    let mut i = 0;
-    for hour in 9..17 {
-        for minute in vec![0, 20, 40] {
-            assert_eq!(ocurrences[i], create!(Date, day: 5, hour: hour, minute: minute));
-            assert_eq!(ocurrences[i + 24], create!(Date, day: 6, hour: hour, minute: minute));
-            assert_eq!(ocurrences[i + 48], create!(Date, day: 7, hour: hour, minute: minute));
-            i += 1;
-        }
-    }
-}
-
-#[test]
 fn test_minutely_set_pos_no_exapanded_seconds() {
     /*
     Starts at 12:05:05 PM and ends at 12:07:00 PM, with a frequency of 1 minute.
@@ -923,4 +831,96 @@ fn test_minutely_set_pos_multiple_ocurrences_multiple_expanded_seconds() {
     assert_eq!(ocurrences[1], create!(Date, minute: 5, second: 56));
     assert_eq!(ocurrences[2], create!(Date, minute: 6, second: 12));
     assert_eq!(ocurrences[3], create!(Date, minute: 6, second: 56));
+}
+
+#[test]
+fn test_rfc_every_15_minutes_6_ocurrences() {
+    /*
+    Every 15 minutes for 6 occurrences:
+
+       DTSTART;TZID=America/New_York:19970902T090000
+       RRULE:FREQ=MINUTELY;INTERVAL=15;COUNT=6
+
+       ==> (September 2, 1997 EDT) 09:00,09:15,09:30,09:45,10:00,10:15
+    */
+    let start_date = create!(Date, hour: 9, minute: 0);
+
+    let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
+        .set_interval(15)
+        .set_count(6)
+        .build();
+
+    let ocurrences = recurrence.calculate_ocurrences(start_date, start_date.set_month(12).unwrap());
+
+    assert_eq!(ocurrences.len(), 6);
+    assert_eq!(ocurrences[0], create!(Date, hour: 9, minute: 0));
+    assert_eq!(ocurrences[1], create!(Date, hour: 9, minute: 15));
+    assert_eq!(ocurrences[2], create!(Date, hour: 9, minute: 30));
+    assert_eq!(ocurrences[3], create!(Date, hour: 9, minute: 45));
+    assert_eq!(ocurrences[4], create!(Date, hour: 10, minute: 0));
+    assert_eq!(ocurrences[5], create!(Date, hour: 10, minute: 15));
+}
+
+#[test]
+fn test_rfc_every_hour_and_a_half_for_4_ocurrences() {
+    /*
+    Every hour and a half for 4 occurrences:
+
+       DTSTART;TZID=America/New_York:19970902T090000
+       RRULE:FREQ=MINUTELY;INTERVAL=90;COUNT=4
+
+       ==> (September 2, 1997 EDT) 09:00,10:30,12:00,13:30
+    */
+    let start_date = create!(Date, hour: 9, minute: 0);
+
+    let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
+        .set_interval(90)
+        .set_count(4)
+        .build();
+
+    let ocurrences = recurrence.calculate_ocurrences(start_date, start_date.set_month(12).unwrap());
+
+    assert_eq!(ocurrences.len(), 4);
+    assert_eq!(ocurrences[0], create!(Date, hour: 9, minute: 0));
+    assert_eq!(ocurrences[1], create!(Date, hour: 10, minute: 30));
+    assert_eq!(ocurrences[2], create!(Date, hour: 12, minute: 0));
+    assert_eq!(ocurrences[3], create!(Date, hour: 13, minute: 30));
+}
+
+#[test]
+fn test_rfc_every_20_minutes_from_9_to_4_40_every_day() {
+    /*
+    Every 20 minutes from 9:00 AM to 4:40 PM every day:
+
+       DTSTART;TZID=America/New_York:19970902T090000
+       RRULE:FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16
+
+       ==> (September 2, 1997 EDT) 9:00,9:20,9:40,10:00,10:20,
+                                   ... 16:00,16:20,16:40
+           (September 3, 1997 EDT) 9:00,9:20,9:40,10:00,10:20,
+                                   ...16:00,16:20,16:40
+           ...
+
+    Limit to 3 days to avoid a long test
+    */
+    let start_date = create!(Date, day: 5, hour: 9, minute: 0);
+
+    let recurrence = RecurrenceBuilder::new(Frequency::Minutely)
+        .set_interval(20)
+        .set_hours(vec![9, 10, 11, 12, 13, 14, 15, 16])
+        .set_count(24 * 3)
+        .build();
+
+    let ocurrences = recurrence.calculate_ocurrences(start_date, start_date.set_month(12).unwrap());
+
+    assert_eq!(ocurrences.len(), 24 * 3);
+    let mut i = 0;
+    for hour in 9..17 {
+        for minute in vec![0, 20, 40] {
+            assert_eq!(ocurrences[i], create!(Date, day: 5, hour: hour, minute: minute));
+            assert_eq!(ocurrences[i + 24], create!(Date, day: 6, hour: hour, minute: minute));
+            assert_eq!(ocurrences[i + 48], create!(Date, day: 7, hour: hour, minute: minute));
+            i += 1;
+        }
+    }
 }
