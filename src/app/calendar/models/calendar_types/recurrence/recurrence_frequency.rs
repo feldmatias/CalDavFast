@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+pub mod recurrence_hourly;
 pub mod recurrence_minutely;
 pub mod recurrence_secondly;
 

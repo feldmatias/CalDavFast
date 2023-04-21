@@ -147,7 +147,7 @@ impl Recurrence {
         match self.frequency {
             Frequency::Secondly => self.calculate_ocurrences_secondly(start_date, ending_date, count),
             Frequency::Minutely => self.calculate_ocurrences_minutely(start_date, ending_date, count),
-            Frequency::Hourly => Vec::new(),  // TODO
+            Frequency::Hourly => self.calculate_ocurrences_hourly(start_date, ending_date, count),
             Frequency::Daily => Vec::new(),   // TODO
             Frequency::Weekly => Vec::new(),  // TODO
             Frequency::Monthly => Vec::new(), // TODO

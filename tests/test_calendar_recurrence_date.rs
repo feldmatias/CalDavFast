@@ -1325,6 +1325,48 @@ fn test_add_minutes_changes_year() {
 }
 
 #[test]
+fn test_add_hours_changes_hour() {
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_hours(1);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 1);
+    assert_eq!(new_date.get_hour(), 1);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 0);
+}
+
+#[test]
+fn test_add_hours_changes_day() {
+    let date = create!(Date, year: 2021, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_hours(25);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 1);
+    assert_eq!(new_date.get_month_day(), 2);
+    assert_eq!(new_date.get_hour(), 1);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 0);
+}
+
+#[test]
+fn test_add_hours_changes_month() {
+    let date = create!(Date, year: 2021, month: 1, day: 31, hour: 0, minute: 0, second: 0);
+
+    let new_date = date.add_hours(50);
+
+    assert_eq!(new_date.get_year(), 2021);
+    assert_eq!(new_date.get_month(), 2);
+    assert_eq!(new_date.get_month_day(), 2);
+    assert_eq!(new_date.get_hour(), 2);
+    assert_eq!(new_date.get_minute(), 0);
+    assert_eq!(new_date.get_second(), 0);
+}
+
+#[test]
 fn test_minutes_to_date_same_hour() {
     let date1 = create!(Date, minute: 0, second: 0);
     let date2 = create!(Date, minute: 10, second: 10);
@@ -1372,4 +1414,34 @@ fn test_minutes_to_date_different_year() {
     let minutes = date1.minutes_to_date(&date2);
 
     assert_eq!(minutes, 539170);
+}
+
+#[test]
+fn test_hours_to_date_same_day() {
+    let date1 = create!(Date, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, hour: 10, minute: 10, second: 10);
+
+    let hours = date1.hours_to_date(&date2);
+
+    assert_eq!(hours, 10);
+}
+
+#[test]
+fn test_hours_to_date_same_month() {
+    let date1 = create!(Date, day: 1, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, day: 3, hour: 10, minute: 10, second: 10);
+
+    let hours = date1.hours_to_date(&date2);
+
+    assert_eq!(hours, 58);
+}
+
+#[test]
+fn test_hours_to_date_same_year() {
+    let date1 = create!(Date, month: 1, day: 1, hour: 0, minute: 0, second: 0);
+    let date2 = create!(Date, month: 2, day: 3, hour: 10, minute: 10, second: 10);
+
+    let hours = date1.hours_to_date(&date2);
+
+    assert_eq!(hours, 802);
 }

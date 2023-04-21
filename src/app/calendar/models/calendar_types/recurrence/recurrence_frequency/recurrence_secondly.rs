@@ -2,7 +2,7 @@ use crate::app::calendar::models::calendar_types::recurrence::{date::Date, Recur
 
 impl Recurrence {
     pub fn calculate_ocurrences_secondly(&self, start_date: Date, ending_date: Date, count: u32) -> Vec<Date> {
-        /* If freq is SECONDLY, we advance every `interval` seconds, but:
+        /* When freq is SECONDLY, we advance every `interval` seconds, but:
                 - Only in the months specified in `months`,
                 - Only in the days specified in `month_days` and `year_days` and `weekdays`,
                 - Only in the hours specified in `hours`,

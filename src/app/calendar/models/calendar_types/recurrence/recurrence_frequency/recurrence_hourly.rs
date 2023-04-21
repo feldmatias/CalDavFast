@@ -1,14 +1,14 @@
 use crate::app::calendar::models::calendar_types::recurrence::{date::Date, Recurrence};
 
 impl Recurrence {
-    pub fn calculate_ocurrences_minutely(&self, start_date: Date, ending_date: Date, count: u32) -> Vec<Date> {
-        /* When freq is MINUTELY, we advance every `interval` minutes, but:
+    pub fn calculate_ocurrences_hourly(&self, start_date: Date, ending_date: Date, count: u32) -> Vec<Date> {
+        /* When freq is HOURLY, we advance every `interval` hours, but:
                 - Only in the months specified in `months`,
                 - Only in the days specified in `month_days` and `year_days` and `weekdays`,
-                - Only in the hours specified in `hours`,
-            Only accept dates if the minutes are specified in `minutes`,
+            Only accept dates if the hours are specified in `hours`,
             If seconds are specified, expand dates to include all those seconds, else use start_date seconds
-            If positions are specified, within a minute only include those that match the positions in positions.
+            If minutes are specified, expand dates to include all those minutes, else use start_date minutes
+            If positions are specified, within an hour only include those that match the positions in positions.
         */
         let mut ocurrences = Vec::new();
         let mut count = count;
@@ -20,7 +20,7 @@ impl Recurrence {
         let month_days = self.month_days.get_or_default_month_days();
         let weekdays = self.weekdays.get_or_default_weekdays();
         let hours = self.hours.get_or_default_hours();
-        let minutes = self.minutes.get_or_default_minutes();
+        let minutes = self.minutes.get_or_default(vec![start_date.get_minute()]);
         let seconds = self.seconds.get_or_default(vec![start_date.get_second()]);
 
         loop {
@@ -44,14 +44,11 @@ impl Recurrence {
             } else if !weekdays.contains(&current_date.get_weekday()) {
                 // Skip to next weekday
                 skip_to_date = Some(current_date.advance_until_next_available_weekday(&weekdays));
-            } else if !hours.contains(&current_date.get_hour()) {
-                // Skip to next hour
-                skip_to_date = Some(current_date.advance_until_next_available_hour(&hours));
             }
 
             if let Some(date) = skip_to_date {
-                let minutes_to_add = self.calculate_interval_to_skip_ocurrence(current_date.minutes_to_date(&date));
-                current_date = current_date.add_minutes(minutes_to_add);
+                let hours_to_add = self.calculate_interval_to_skip_ocurrence(current_date.hours_to_date(&date));
+                current_date = current_date.add_hours(hours_to_add);
                 continue;
             }
 
