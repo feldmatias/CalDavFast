@@ -4,7 +4,7 @@ use crate::app::calendar::models::calendar_types::recurrence::{
 
 use super::recurrence_calculator::RecurrenceFrequencyCalculator;
 
-pub struct SecondlyRecurrenceCalculator {
+pub struct HourlyRecurrenceCalculator {
     months: RecurrenceVec<u32>,
     year_days: RecurrenceVec<u32>,
     month_days: RecurrenceVec<u32>,
@@ -14,15 +14,15 @@ pub struct SecondlyRecurrenceCalculator {
     seconds: RecurrenceVec<u32>,
 }
 
-impl SecondlyRecurrenceCalculator {
-    pub fn new(recurrence: &Recurrence, _start_date: Date) -> Self {
+impl HourlyRecurrenceCalculator {
+    pub fn new(recurrence: &Recurrence, start_date: Date) -> Self {
         let months = recurrence.months.get_or_default_months();
         let year_days = recurrence.year_days.get_or_default_year_days();
         let month_days = recurrence.month_days.get_or_default_month_days();
         let weekdays = recurrence.weekdays.get_or_default_weekdays();
         let hours = recurrence.hours.get_or_default_hours();
-        let minutes = recurrence.minutes.get_or_default_minutes();
-        let seconds = recurrence.seconds.get_or_default_seconds();
+        let minutes = recurrence.minutes.get_or_default(vec![start_date.get_minute()]);
+        let seconds = recurrence.seconds.get_or_default(vec![start_date.get_second()]);
 
         Self {
             months,
@@ -36,16 +36,17 @@ impl SecondlyRecurrenceCalculator {
     }
 }
 
-impl RecurrenceFrequencyCalculator for SecondlyRecurrenceCalculator {
-    /* When freq is SECONDLY, we advance every `interval` seconds, but:
+impl RecurrenceFrequencyCalculator for HourlyRecurrenceCalculator {
+    /* When freq is HOURLY, we advance every `interval` hours, but:
                 - Only in the months specified in `months`,
                 - Only in the days specified in `month_days` and `year_days` and `weekdays`,
-                - Only in the hours specified in `hours`,
-                - Only in the minutes specified in `minutes`,
-            Only accept dates if the seconds are specified in `seconds`,
+            Only accept dates if the hours are specified in `hours`,
+            If seconds are specified, expand dates to include all those seconds, else use start_date seconds
+            If minutes are specified, expand dates to include all those minutes, else use start_date minutes
+            If positions are specified, within an hour only include those that match the positions in positions.
     */
-    fn use_positions(&self, _recurrence: &Recurrence) -> bool {
-        false
+    fn use_positions(&self, recurrence: &Recurrence) -> bool {
+        !recurrence.seconds.is_empty() || !recurrence.minutes.is_empty()
     }
 
     fn get_skip_time(&self, current_date: Date, interval: u32) -> Option<u32> {
@@ -62,27 +63,32 @@ impl RecurrenceFrequencyCalculator for SecondlyRecurrenceCalculator {
         } else if !self.weekdays.contains(&current_date.get_weekday()) {
             // Skip to next weekday
             skip_to_date = Some(current_date.advance_until_next_available_weekday(&self.weekdays));
-        } else if !self.hours.contains(&current_date.get_hour()) {
-            // Skip to next hour
-            skip_to_date = Some(current_date.advance_until_next_available_hour(&self.hours));
-        } else if !self.minutes.contains(&current_date.get_minute()) {
-            // Skip to next minute
-            skip_to_date = Some(current_date.advance_until_next_available_minute(&self.minutes));
         }
 
-        skip_to_date
-            .map(|date| self.calculate_interval_to_skip_ocurrence(current_date.seconds_to_date(&date), interval))
+        skip_to_date.map(|date| self.calculate_interval_to_skip_ocurrence(current_date.hours_to_date(&date), interval))
     }
 
     fn add_time(&self, current_date: Date, time: u32) -> Date {
-        current_date.add_seconds(time)
+        current_date.add_hours(time)
     }
 
     fn check_date(&self, current_date: Date) -> bool {
-        self.seconds.contains(&current_date.get_second())
+        self.hours.contains(&current_date.get_hour())
     }
 
     fn expand_date(&self, current_date: Date) -> Vec<Date> {
-        vec![current_date]
+        // Expand minutes and seconds
+        let mut hour_ocurrences = Vec::new();
+        for minute in self.minutes.iter() {
+            for second in self.seconds.iter() {
+                let ocurrence = current_date
+                    .set_minute(*minute, false)
+                    .and_then(|ocurrence| ocurrence.set_second(*second, false));
+                if let Some(hour_ocurrence) = ocurrence {
+                    hour_ocurrences.push(hour_ocurrence);
+                }
+            }
+        }
+        hour_ocurrences
     }
 }

@@ -247,6 +247,10 @@ impl Date {
     pub fn add_minutes(&self, minutes: u32) -> Self {
         Self::new(self.date + chrono::Duration::minutes(minutes as i64))
     }
+
+    pub fn add_hours(&self, hours: u32) -> Self {
+        Self::new(self.date + chrono::Duration::hours(hours as i64))
+    }
 }
 
 impl Date {
@@ -256,6 +260,10 @@ impl Date {
 
     pub fn minutes_to_date(&self, other: &Self) -> u32 {
         (other.date - self.date).num_minutes() as u32
+    }
+
+    pub fn hours_to_date(&self, other: &Self) -> u32 {
+        (other.date - self.date).num_hours() as u32
     }
 }
 
