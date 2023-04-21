@@ -14,7 +14,7 @@ impl Recurrence {
         let mut count = count;
         let mut current_date = start_date;
 
-        let use_positions = !self.seconds.is_empty();
+        let use_positions = !self.seconds.is_empty() || !self.minutes.is_empty();
         let months = self.months.get_or_default_months();
         let year_days = self.year_days.get_or_default_year_days();
         let month_days = self.month_days.get_or_default_month_days();
@@ -52,28 +52,32 @@ impl Recurrence {
                 continue;
             }
 
-            if !minutes.contains(&current_date.get_minute()) {
-                // Minute not valid. Continue
-                current_date = current_date.add_minutes(self.interval);
+            if !hours.contains(&current_date.get_hour()) {
+                // Hour not valid. Continue
+                current_date = current_date.add_hours(self.interval);
                 continue;
             }
 
-            // Expand seconds
-            let mut minute_ocurrences = Vec::new();
-            for second in seconds.iter() {
-                let ocurrence = current_date.set_second(*second, false);
-                if let Some(minute_ocurrence) = ocurrence {
-                    minute_ocurrences.push(minute_ocurrence);
+            // Expand minutes and seconds
+            let mut hour_ocurrences = Vec::new();
+            for minute in minutes.iter() {
+                for second in seconds.iter() {
+                    let ocurrence = current_date
+                        .set_minute(*minute, false)
+                        .and_then(|ocurrence| ocurrence.set_second(*second, false));
+                    if let Some(hour_ocurrence) = ocurrence {
+                        hour_ocurrences.push(hour_ocurrence);
+                    }
                 }
             }
 
-            let minute_ocurrences_filtered = if use_positions {
-                self.positions.apply(minute_ocurrences)
+            let hour_ocurrences_filtered = if use_positions {
+                self.positions.apply(hour_ocurrences)
             } else {
-                minute_ocurrences
+                hour_ocurrences
             };
 
-            for ocurrence in minute_ocurrences_filtered.iter() {
+            for ocurrence in hour_ocurrences_filtered.iter() {
                 if !self.excluded_dates.contains(ocurrence)
                     && count > 0
                     && ocurrence <= &ending_date
@@ -84,7 +88,7 @@ impl Recurrence {
                 }
             }
 
-            current_date = current_date.add_minutes(self.interval);
+            current_date = current_date.add_hours(self.interval);
         }
 
         ocurrences
