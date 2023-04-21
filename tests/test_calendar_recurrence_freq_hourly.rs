@@ -848,3 +848,38 @@ fn test_hourly_set_pos_multiple_ocurrences_multiple_expanded_minutes_and_seconds
     assert_eq!(ocurrences[2], create!(Date, hour: 6, minute: 16, second: 12));
     assert_eq!(ocurrences[3], create!(Date, hour: 6, minute: 43, second: 47));
 }
+
+#[test]
+fn test_rfc_example1() {
+    /*
+    Every 3 hours from 9:00 AM to 5:00 PM on a specific day:
+
+       DTSTART;TZID=America/New_York:19970902T090000
+       RRULE:FREQ=HOURLY;INTERVAL=3;UNTIL=19970902T170000Z
+
+       ==> (September 2, 1997 EDT) 09:00,12:00,15:00
+    */
+    let start_date = create!(Date, year: 1997, month: 9, day: 2, hour: 9, minute: 0, second: 0);
+    let end_date = create!(Date, year: 1997, month: 9, day: 2, hour: 17, minute: 0, second: 0);
+
+    let recurrence = RecurrenceBuilder::new(Frequency::Hourly)
+        .set_interval(3)
+        .set_until_date(end_date.clone())
+        .build();
+
+    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+
+    assert_eq!(ocurrences.len(), 3);
+    assert_eq!(
+        ocurrences[0],
+        create!(Date, year: 1997, month: 9, day: 2, hour: 9, minute: 0, second: 0)
+    );
+    assert_eq!(
+        ocurrences[1],
+        create!(Date, year: 1997, month: 9, day: 2, hour: 12, minute: 0, second: 0)
+    );
+    assert_eq!(
+        ocurrences[2],
+        create!(Date, year: 1997, month: 9, day: 2, hour: 15, minute: 0, second: 0)
+    );
+}
