@@ -33,12 +33,18 @@ RDATE: ; (Optional, MAY occur more than once)
 END:VEVENT
 */
 
+pub mod event_builder;
+
 use bson::oid::ObjectId;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use super::calendar_types::{
-    attendee::Attendee, event_classification::EventClassification, event_status::EventStatus, geolocation::GeoLocation,
+    attendee::Attendee,
+    event_classification::EventClassification,
+    event_status::EventStatus,
+    geolocation::GeoLocation,
+    recurrence::{date::Date, Recurrence},
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -53,12 +59,15 @@ pub struct Event {
     updated_at: DateTime<Utc>,
 
     /* Event start date */
-    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
-    start: DateTime<Utc>,
+    start: Date,
 
     /* Event end date */
-    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
-    end: DateTime<Utc>,
+    end: Option<Date>,
+
+    recurrence: Option<Recurrence>,
+
+    /* Event end date including recurrence */
+    recurrence_end: Date,
 
     description: Option<String>,
 
@@ -93,5 +102,60 @@ pub struct Event {
     comments: Option<Vec<String>>,
 
     contacts: Option<Vec<String>>,
-    // recurrence
+}
+
+impl Event {
+    #[allow(clippy::too_many_arguments)]
+    fn new(
+        start: Date,
+        end: Option<Date>,
+        description: Option<String>,
+        summary: Option<String>,
+        classification: Option<EventClassification>,
+        geo_location: Option<GeoLocation>,
+        location: Option<String>,
+        organizer: Option<String>,
+        priority: Option<u8>,
+        status: Option<EventStatus>,
+        transparent: bool,
+        url: Option<String>,
+        attachments: Option<Vec<String>>,
+        attendees: Option<Vec<Attendee>>,
+        categories: Option<Vec<String>>,
+        comments: Option<Vec<String>>,
+        contacts: Option<Vec<String>>,
+        recurrence: Option<Recurrence>,
+    ) -> Self {
+        let recurrence_end = Date::new(Utc::now());
+        Self {
+            id: None,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+            start,
+            end,
+            recurrence_end,
+            description,
+            summary,
+            classification,
+            geo_location,
+            location,
+            organizer,
+            priority,
+            version: 0,
+            status,
+            transparent,
+            url,
+            attachments,
+            attendees,
+            categories,
+            comments,
+            contacts,
+            recurrence,
+        }
+    }
+
+    /*fn update(&mut self) {
+        self.updated_at = Utc::now();
+        self.version += 1;
+    }*/
 }
