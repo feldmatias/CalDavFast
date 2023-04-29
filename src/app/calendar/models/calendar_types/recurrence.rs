@@ -194,6 +194,8 @@ impl Recurrence {
         /* Returns all included dates in the recurrence, between start_date and end_date */
 
         // TODO: always use self.start_date and ignore ocurrences before start_date, to avoid problems with intervals
+        // or, find the first start date after start_date and use that as the starting point taking into account interval
+        // example test: interval 5. self.start_date = 10 but start_date = 12. it should return 15, 20, 25, etc. but it probably returns 12, 17, 22, etc.
         let starting_date = match start_date {
             Some(date) => {
                 if date > self.start_date {
