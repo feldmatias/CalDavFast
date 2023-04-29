@@ -88,6 +88,7 @@ pub mod recurrence_vec;
 pub mod weekday;
 use std::collections::HashSet;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use self::{
@@ -113,56 +114,142 @@ pub struct RecurrenceDay {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Recurrence {
-    pub frequency: Frequency,
+    frequency: Frequency,
 
-    pub interval: u32,
+    interval: u32,
 
-    pub count: Option<u32>,
+    count: Option<u32>,
 
-    pub until_date: Option<Date>,
+    start_date: Date,
 
-    pub week_start: Option<Weekday>,
+    /* Last date of recurrence. Set by user or calculated based on count in Recurrence::new */
+    until_date: Option<Date>,
 
-    pub excluded_dates: HashSet<Date>,
+    week_start: Option<Weekday>,
 
-    pub recurrences: Vec<RecurrenceDay>,
-    pub weekdays: RecurrenceVec<Weekday>,
-    pub positions: RecurrencePositions,
+    excluded_dates: HashSet<Date>,
 
-    pub hours: RecurrenceVec<u32>,
-    pub minutes: RecurrenceVec<u32>,
-    pub seconds: RecurrenceVec<u32>,
-    pub year_days: RecurrenceVec<u32>,
-    pub month_days: RecurrenceVec<u32>,
-    pub months: RecurrenceVec<u32>,
+    recurrences: Vec<RecurrenceDay>,
+    weekdays: RecurrenceVec<Weekday>,
+    positions: RecurrencePositions,
+
+    hours: RecurrenceVec<u32>,
+    minutes: RecurrenceVec<u32>,
+    seconds: RecurrenceVec<u32>,
+    year_days: RecurrenceVec<u32>,
+    month_days: RecurrenceVec<u32>,
+    months: RecurrenceVec<u32>,
 }
 
 impl Recurrence {
-    pub fn calculate_ocurrences(&self, start_date: Date, end_date: Date) -> Vec<Date> {
-        /* Returns all included dates in the recurrence, between start_date and end_date */
-        let ending_date = match &self.until_date {
-            Some(date) => {
-                if date > &end_date {
-                    end_date
-                } else {
-                    *date
-                }
-            }
-            None => end_date,
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        frequency: Frequency,
+        interval: u32,
+        count: Option<u32>,
+        start_date: Date,
+        until_date: Option<Date>,
+        week_start: Option<Weekday>,
+        excluded_dates: HashSet<Date>,
+        positions: RecurrencePositions,
+        recurrences: Vec<RecurrenceDay>,
+        weekdays: RecurrenceVec<Weekday>,
+        hours: RecurrenceVec<u32>,
+        minutes: RecurrenceVec<u32>,
+        seconds: RecurrenceVec<u32>,
+        year_days: RecurrenceVec<u32>,
+        month_days: RecurrenceVec<u32>,
+        months: RecurrenceVec<u32>,
+    ) -> Result<Self, String> {
+        // TODO tests
+        if count.is_none() && until_date.is_none() {
+            return Err("count or until_date must be set".to_string());
+        }
+
+        let mut recurrence = Self {
+            frequency,
+            interval,
+            count,
+            start_date,
+            until_date,
+            week_start,
+            excluded_dates,
+            recurrences,
+            weekdays,
+            positions,
+            hours,
+            minutes,
+            seconds,
+            year_days,
+            month_days,
+            months,
         };
 
-        let count = self.count.unwrap_or(1000);
+        recurrence.until_date = Some(recurrence.calculate_end_date());
+
+        Ok(recurrence)
+    }
+
+    pub fn calculate_ocurrences(&self, start_date: Option<Date>, end_date: Option<Date>) -> Vec<Date> {
+        /* Returns all included dates in the recurrence, between start_date and end_date */
+
+        // TODO: always use self.start_date and ignore ocurrences before start_date, to avoid problems with intervals
+        let starting_date = match start_date {
+            Some(date) => {
+                if date > self.start_date {
+                    date
+                } else {
+                    self.start_date
+                }
+            }
+            None => self.start_date,
+        };
+
+        // ending date is none if both self.until_date and end_date are none
+        // if self.until_date is none, ending_date is end_date
+        // if end_date is none, ending_date is self.until_date
+        // if both are not none, ending_date is the earliest of the two
+        let ending_date = match (self.until_date, end_date) {
+            (None, None) => Date::new(
+                DateTime::parse_from_rfc3339("5000-01-01T00:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
+            ),
+            (None, Some(date)) => date,
+            (Some(date), None) => date,
+            (Some(date1), Some(date2)) => {
+                if date1 < date2 {
+                    date1
+                } else {
+                    date2
+                }
+            }
+        };
+
+        let count = self.count.unwrap_or(9999999);
 
         let frequency_calculator: Box<dyn RecurrenceFrequencyCalculator> = match self.frequency {
-            Frequency::Secondly => Box::new(SecondlyRecurrenceCalculator::new(self, start_date)),
-            Frequency::Minutely => Box::new(MinutelyRecurrenceCalculator::new(self, start_date)),
-            Frequency::Hourly => Box::new(HourlyRecurrenceCalculator::new(self, start_date)),
+            Frequency::Secondly => Box::new(SecondlyRecurrenceCalculator::new(self, starting_date)),
+            Frequency::Minutely => Box::new(MinutelyRecurrenceCalculator::new(self, starting_date)),
+            Frequency::Hourly => Box::new(HourlyRecurrenceCalculator::new(self, starting_date)),
             Frequency::Daily => unimplemented!(), // TODO: implement daily recurrence calculator
             Frequency::Weekly => unimplemented!(), // TODO: implement weekly recurrence calculator
             Frequency::Monthly => unimplemented!(), // TODO: implement monthly recurrence calculator
             Frequency::Yearly => unimplemented!(), // TODO: implement yearly recurrence calculator
         };
 
-        RecurrenceCalculator::new(self, frequency_calculator).calculate(start_date, ending_date, count)
+        RecurrenceCalculator::new(self, frequency_calculator).calculate(starting_date, ending_date, count)
+    }
+
+    fn calculate_end_date(&self) -> Date {
+        // TODO
+        // If we have count, we need to calculate the end date, if not, we are sure we have until_date and return that
+        // Also modify calculation to avoid storing in memory all the dates, since we only need the last one
+        // Also, add duration to last ocurrence, since the method returns start dates of ocurrences, not end dates
+        self.until_date.unwrap_or(Date::new(
+            DateTime::parse_from_rfc3339("5000-01-01T00:00:00Z")
+                .unwrap()
+                .with_timezone(&Utc),
+        ))
     }
 }

@@ -12,6 +12,7 @@ pub struct RecurrenceBuilder {
 
     count: Option<u32>,
 
+    start_date: Date,
     until_date: Option<Date>,
 
     week_start: Option<Weekday>,
@@ -31,11 +32,12 @@ pub struct RecurrenceBuilder {
 }
 
 impl RecurrenceBuilder {
-    pub fn new(frequency: Frequency) -> Self {
+    pub fn new(frequency: Frequency, start_date: Date) -> Self {
         Self {
             frequency,
             interval: 1,
             count: None,
+            start_date,
             until_date: None,
             week_start: None,
             excluded_dates: None,
@@ -121,23 +123,24 @@ impl RecurrenceBuilder {
         self
     }
 
-    pub fn build(&self) -> Recurrence {
-        Recurrence {
-            frequency: self.frequency,
-            interval: self.interval,
-            count: self.count,
-            until_date: self.until_date,
-            week_start: self.week_start,
-            excluded_dates: self.excluded_dates.clone().unwrap_or_default(),
-            recurrences: self.recurrences.clone().unwrap_or_default(),
-            positions: RecurrencePositions::new(self.positions.clone().unwrap_or_default()),
-            weekdays: RecurrenceVec::new(self.weekdays.clone().unwrap_or_default()),
-            hours: RecurrenceVec::new(self.hours.clone().unwrap_or_default()),
-            minutes: RecurrenceVec::new(self.minutes.clone().unwrap_or_default()),
-            seconds: RecurrenceVec::new(self.seconds.clone().unwrap_or_default()),
-            year_days: RecurrenceVec::new(self.year_days.clone().unwrap_or_default()),
-            month_days: RecurrenceVec::new(self.month_days.clone().unwrap_or_default()),
-            months: RecurrenceVec::new(self.months.clone().unwrap_or_default()),
-        }
+    pub fn build(&self) -> Result<Recurrence, String> {
+        Recurrence::new(
+            self.frequency,
+            self.interval,
+            self.count,
+            self.start_date,
+            self.until_date,
+            self.week_start,
+            self.excluded_dates.clone().unwrap_or_default(),
+            RecurrencePositions::new(self.positions.clone().unwrap_or_default()),
+            self.recurrences.clone().unwrap_or_default(),
+            RecurrenceVec::new(self.weekdays.clone().unwrap_or_default()),
+            RecurrenceVec::new(self.hours.clone().unwrap_or_default()),
+            RecurrenceVec::new(self.minutes.clone().unwrap_or_default()),
+            RecurrenceVec::new(self.seconds.clone().unwrap_or_default()),
+            RecurrenceVec::new(self.year_days.clone().unwrap_or_default()),
+            RecurrenceVec::new(self.month_days.clone().unwrap_or_default()),
+            RecurrenceVec::new(self.months.clone().unwrap_or_default()),
+        )
     }
 }

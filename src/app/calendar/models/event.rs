@@ -126,6 +126,10 @@ impl Event {
         contacts: Option<Vec<String>>,
         recurrence: Option<Recurrence>,
     ) -> Self {
+        /*let recurrence_end = match recurrence {
+            Some(recurrence) => recurrence.calculate_end_date(),
+            None => start,
+        };*/
         let recurrence_end = Date::new(Utc::now());
         Self {
             id: None,

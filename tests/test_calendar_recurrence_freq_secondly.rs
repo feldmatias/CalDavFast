@@ -14,12 +14,13 @@ fn test_secondly_interval1() {
     let start_date = create!(Date, second: 0);
     let end_date = create!(Date, second: 10);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(1)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 11);
     for i in 0..=10 {
@@ -35,12 +36,13 @@ fn test_secondly_interval1_change_minute() {
     let start_date = create!(Date, minute: 0, second: 58);
     let end_date = create!(Date, minute: 1, second: 1);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(1)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, minute: 0, second: 58));
@@ -57,12 +59,13 @@ fn test_secondly_interval1_change_hour() {
     let start_date = create!(Date, hour: 12, minute: 59, second: 58);
     let end_date = create!(Date, hour: 13, minute: 0, second: 1);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(1)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, hour: 12, minute: 59, second: 58));
@@ -79,12 +82,13 @@ fn test_secondly_interval1_change_day() {
     let start_date = create!(Date, day: 4, hour: 23, minute: 59, second: 58);
     let end_date = create!(Date, day: 5, hour: 0, minute: 0, second: 2);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(1)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 5);
     assert_eq!(ocurrences[0], create!(Date, day: 4, hour: 23, minute: 59, second: 58));
@@ -102,12 +106,13 @@ fn test_secondly_interval1_change_month() {
     let start_date = create!(Date, year: 2021, month: 4, day: 30, hour: 23, minute: 59, second: 58);
     let end_date = create!(Date, year: 2021, month: 5, day: 1, hour: 0, minute: 0, second: 2);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(1)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 5);
     assert_eq!(
@@ -140,12 +145,13 @@ fn test_secondly_interval1_change_year() {
     let start_date = create!(Date, year: 2021, month: 12, day: 31, hour: 23, minute: 59, second: 59);
     let end_date = create!(Date, year: 2022, month: 1, day: 1, hour: 0, minute: 0, second: 2);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(1)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(
@@ -174,12 +180,13 @@ fn test_secondly_interval2() {
     let start_date = create!(Date, second: 4);
     let end_date = create!(Date, second: 11);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(2)
         .set_until_date(end_date.clone())
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, second: 4));
@@ -197,12 +204,13 @@ fn test_secondly_allowed_seconds() {
     let start_date = create!(Date, minute: 0, second: 4);
     let end_date = create!(Date, minute: 1, second: 15);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![4, 5, 10, 18, 55])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 8);
     assert_eq!(ocurrences[0], create!(Date, minute: 0, second: 4));
@@ -224,12 +232,13 @@ fn test_secondly_allowed_minutes() {
     let start_date = create!(Date, minute: 0, second: 58);
     let end_date = create!(Date, minute: 4, second: 1);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_minutes(vec![0, 4])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, minute: 0, second: 58));
@@ -247,12 +256,13 @@ fn test_secondly_allowed_hours() {
     let start_date = create!(Date, hour: 0, minute: 59, second: 58);
     let end_date = create!(Date, hour: 4, minute: 0, second: 1);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_hours(vec![0, 4])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, hour: 0, minute: 59, second: 58));
@@ -271,13 +281,14 @@ fn test_secondly_allowed_seconds_and_minutes() {
     let start_date = create!(Date, minute: 0, second: 0);
     let end_date = create!(Date, minute: 5, second: 18);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![5, 46])
         .set_minutes(vec![0, 1, 3])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 6);
     assert_eq!(ocurrences[0], create!(Date, minute: 0, second: 5));
@@ -299,14 +310,15 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours() {
     let start_date = create!(Date, hour: 0, minute: 0, second: 0);
     let end_date = create!(Date, hour: 8, minute: 5, second: 18);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![5, 46])
         .set_minutes(vec![3])
         .set_hours(vec![1, 6])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, hour: 1, minute: 3, second: 5));
@@ -327,15 +339,16 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days() {
     let start_date = create!(Date, day: 1, hour: 0, minute: 0, second: 0);
     let end_date = create!(Date, day: 9, hour: 8, minute: 5, second: 18);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![5, 46])
         .set_minutes(vec![3])
         .set_hours(vec![1])
         .set_month_days(vec![6])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 2);
     assert_eq!(ocurrences[0], create!(Date, day: 6, hour: 1, minute: 3, second: 5));
@@ -355,16 +368,17 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_year_d
     let start_date = create!(Date, month: 1, day: 1, hour: 0, minute: 0, second: 0);
     let end_date = create!(Date, month: 5, day: 9, hour: 8, minute: 5, second: 18);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![5, 46])
         .set_minutes(vec![3])
         .set_hours(vec![1])
         .set_month_days(vec![1, 5, 9, 10, 23])
         .set_year_days(vec![64, 77, 91])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(
@@ -399,7 +413,7 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_weekda
     let start_date = create!(Date, month: 1, day: 1, hour: 0, minute: 0, second: 0);
     let end_date = create!(Date, month: 5, day: 9, hour: 8, minute: 5, second: 18);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![46])
         .set_minutes(vec![3])
@@ -407,9 +421,10 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_weekda
         .set_month_days(vec![1, 5, 9, 10, 23])
         .set_months(vec![3])
         .set_weekdays(vec![Weekday::Monday, Weekday::Friday])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 2);
     assert_eq!(
@@ -435,16 +450,17 @@ fn test_secondly_allowed_seconds_and_minutes_and_hours_and_month_days_and_months
     let start_date = create!(Date, month: 1, day: 1, hour: 0, minute: 0, second: 0);
     let end_date = create!(Date, month: 5, day: 9, hour: 8, minute: 5, second: 18);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_seconds(vec![5, 46])
         .set_minutes(vec![3])
         .set_hours(vec![1])
         .set_month_days(vec![23])
         .set_months(vec![1, 4])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(
@@ -474,13 +490,14 @@ fn test_secondly_interval5_allowed_seconds() {
     let start_date = create!(Date, second: 0);
     let end_date = create!(Date, second: 59);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(5)
         .set_until_date(end_date.clone())
         .set_seconds(vec![0, 5, 6, 7, 8, 9, 11, 18, 19, 20, 25, 32, 37, 38, 39, 55])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 5);
     assert_eq!(ocurrences[0], create!(Date, second: 0));
@@ -500,7 +517,7 @@ fn test_secondly_interval5_one_month_one_day_one_hour_one_minute_three_seconds()
     let start_date = create!(Date, year: 2022, month: 1, day: 1, hour: 0, minute: 0, second: 0);
     let end_date = create!(Date, year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(5)
         .set_until_date(end_date.clone())
         .set_months(vec![5])
@@ -508,9 +525,10 @@ fn test_secondly_interval5_one_month_one_day_one_hour_one_minute_three_seconds()
         .set_hours(vec![5])
         .set_minutes(vec![5])
         .set_seconds(vec![5, 10, 12])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(
@@ -541,7 +559,7 @@ fn test_secondly_interval5_one_month_one_day_one_hour_one_minute_three_seconds_s
     let start_date = create!(Date, year: 2022, month: 1, day: 1, hour: 0, minute: 0, second: 7);
     let end_date = create!(Date, year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(5)
         .set_until_date(end_date.clone())
         .set_months(vec![5])
@@ -549,9 +567,10 @@ fn test_secondly_interval5_one_month_one_day_one_hour_one_minute_three_seconds_s
         .set_hours(vec![5])
         .set_minutes(vec![5])
         .set_seconds(vec![5, 10, 12])
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 2);
     assert_eq!(
@@ -573,7 +592,7 @@ fn test_secondly_exluded_dates() {
     let start_date = create!(Date, second: 0);
     let end_date = create!(Date, second: 10);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_until_date(end_date.clone())
         .set_excluded_dates(
             vec![
@@ -586,9 +605,10 @@ fn test_secondly_exluded_dates() {
             .into_iter()
             .collect(),
         )
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 6);
     assert_eq!(ocurrences[0], create!(Date, second: 0));
@@ -609,7 +629,7 @@ fn test_secondly_interval2_allowed_seconds_and_exluded_dates() {
     let start_date = create!(Date, second: 0);
     let end_date = create!(Date, second: 20);
 
-    let recurrence = RecurrenceBuilder::new(Frequency::Secondly)
+    let recurrence = RecurrenceBuilder::new(Frequency::Secondly, start_date)
         .set_interval(2)
         .set_until_date(end_date.clone())
         .set_seconds(vec![0, 1, 2, 3, 4, 12, 13, 15, 16])
@@ -625,9 +645,10 @@ fn test_secondly_interval2_allowed_seconds_and_exluded_dates() {
             .into_iter()
             .collect(),
         )
-        .build();
+        .build()
+        .unwrap();
 
-    let ocurrences = recurrence.calculate_ocurrences(start_date, end_date);
+    let ocurrences = recurrence.calculate_ocurrences(None, None);
 
     assert_eq!(ocurrences.len(), 4);
     assert_eq!(ocurrences[0], create!(Date, second: 0));
