@@ -231,16 +231,20 @@ impl Recurrence {
         let count = self.count.unwrap_or(9999999);
 
         let frequency_calculator: Box<dyn RecurrenceFrequencyCalculator> = match self.frequency {
-            Frequency::Secondly => Box::new(SecondlyRecurrenceCalculator::new(self, starting_date)),
-            Frequency::Minutely => Box::new(MinutelyRecurrenceCalculator::new(self, starting_date)),
-            Frequency::Hourly => Box::new(HourlyRecurrenceCalculator::new(self, starting_date)),
+            Frequency::Secondly => Box::new(SecondlyRecurrenceCalculator::new(self, self.start_date)),
+            Frequency::Minutely => Box::new(MinutelyRecurrenceCalculator::new(self, self.start_date)),
+            Frequency::Hourly => Box::new(HourlyRecurrenceCalculator::new(self, self.start_date)),
             Frequency::Daily => unimplemented!(), // TODO: implement daily recurrence calculator
             Frequency::Weekly => unimplemented!(), // TODO: implement weekly recurrence calculator
             Frequency::Monthly => unimplemented!(), // TODO: implement monthly recurrence calculator
             Frequency::Yearly => unimplemented!(), // TODO: implement yearly recurrence calculator
         };
 
-        RecurrenceCalculator::new(self, frequency_calculator).calculate(starting_date, ending_date, count)
+        RecurrenceCalculator::new(self, frequency_calculator).calculate(
+            starting_date, /* TODO fix */
+            ending_date,
+            count,
+        )
     }
 
     fn calculate_end_date(&self) -> Date {
